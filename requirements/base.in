@@ -14,7 +14,6 @@ flower
 django
 django-environ
 django-model-utils
-django-allauth
 django-redis
 # Django REST Framework
 djangorestframework

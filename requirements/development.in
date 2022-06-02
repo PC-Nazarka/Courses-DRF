@@ -9,12 +9,6 @@ Werkzeug
 psycopg2-binary
 watchgod
 
-# Documentation
-# ------------------------------------------------------------------------------
-sphinx
-sphinx-autobuild
-
-
 # Testing
 # ------------------------------------------------------------------------------
 django-stubs
@@ -41,4 +35,3 @@ factory-boy
 django-debug-toolbar
 django-extensions
 django-coverage-plugin
-
