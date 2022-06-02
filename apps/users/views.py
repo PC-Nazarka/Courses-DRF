@@ -5,5 +5,7 @@ from .serializers import UserSerializer
 
 
 class UserViewSet(viewsets.ModelViewSet):
+    """ViewSet for Use model."""
+
     serializer_class = UserSerializer
     queryset = get_user_model().objects.all()

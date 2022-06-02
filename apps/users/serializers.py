@@ -5,6 +5,8 @@ User = get_user_model()
 
 
 class UserSerializer(serializers.ModelSerializer):
+    """Serializer for User model."""
+
     class Meta:
         model = User
         fields = "__all__"

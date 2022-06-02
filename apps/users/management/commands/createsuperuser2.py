@@ -3,6 +3,8 @@ from django.core.management import CommandError
 
 
 class Command(createsuperuser.Command):
+    """Custom command for create superuser in command line."""
+
     help = "Crate a superuser, and allow password to be provided"
 
     def add_arguments(self, parser):

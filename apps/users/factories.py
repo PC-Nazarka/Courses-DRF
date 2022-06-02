@@ -6,6 +6,7 @@ from factory.django import DjangoModelFactory
 
 
 class UserFactory(DjangoModelFactory):
+    """Factory for User instance."""
 
     username = Faker("user_name")
     email = Faker("email")
