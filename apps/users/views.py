@@ -1,11 +1,11 @@
 from django.contrib.auth import get_user_model
 from rest_framework import viewsets
 
-from .serializers import UserSerializer
+from . import serializers
 
 
 class UserViewSet(viewsets.ModelViewSet):
-    """ViewSet for Use model."""
+    """ViewSet for User model."""
 
-    serializer_class = UserSerializer
+    serializer_class = serializers.UserSerializer
     queryset = get_user_model().objects.all()
