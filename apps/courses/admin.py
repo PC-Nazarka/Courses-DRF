@@ -52,7 +52,7 @@ class TaskAdmin(admin.ModelAdmin):
     search_fields = ("title",)
     list_display = (
         "id",
-        "type",
+        "type_task",
         "title",
         "text",
     )
@@ -80,6 +80,7 @@ class CommentAdmin(admin.ModelAdmin):
         "parent",
         "user",
     )
+    search_fields = ("content",)
     list_display = (
         "id",
         "content",
@@ -96,6 +97,6 @@ class ReviewAdmin(admin.ModelAdmin):
     )
     list_display = (
         "id",
-        "reting",
+        "rating",
         "review",
     )

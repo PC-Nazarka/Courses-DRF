@@ -1,14 +1,18 @@
+from django.contrib.auth import get_user_model
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
 from apps.models import BaseModel
 
-from .reviews import get_sentinel_user
 
-
-def get_directory_path(instance) -> str:
+def get_directory_path(instance, _) -> str:
     """Get directory for save image of course."""
     return f"course_{instance.name}_{instance.id}"
+
+
+def get_sentinel_user():
+    """Get ``deleted`` user."""
+    return get_user_model().objects.get_or_create(username="Deleted")[0]
 
 
 class Course(BaseModel):
@@ -33,7 +37,7 @@ class Course(BaseModel):
         blank=True,
     )
     students = models.ManyToManyField(
-        "apps.users.User",
+        "users.User",
         verbose_name=_("One of students"),
         related_name="courses",
     )
@@ -65,7 +69,10 @@ class Category(BaseModel):
 class Topic(BaseModel):
     """Model for Topic."""
 
-    title = models.CharField(verbose_name=_("One title of topic"))
+    title = models.CharField(
+        max_length=255,
+        verbose_name=_("One title of topic"),
+    )
     number = models.IntegerField(
         verbose_name=_("Number topic in course"),
     )
@@ -95,13 +102,23 @@ class Task(BaseModel):
         INFORMATION = "INFORMATION", _("Information")
         TEST = "TEST", _("Test")
 
-    type = models.CharField(
+    type_task = models.CharField(
+        max_length=255,
         verbose_name=_("Type"),
         choices=Type.choices,
     )
-    title = models.CharField(verbose_name=_("One title of task"))
+    title = models.CharField(
+        max_length=255,
+        verbose_name=_("One title of task"),
+    )
     text = models.TextField(
         verbose_name=_("Text or description"),
+    )
+    topic = models.ForeignKey(
+        Topic,
+        on_delete=models.CASCADE,
+        verbose_name=_("Task of topic"),
+        related_name="tasks",
     )
 
     class Meta:
@@ -150,9 +167,10 @@ class Comment(BaseModel):
         on_delete=models.CASCADE,
         verbose_name=_("Parent comment"),
         related_name="child_comments",
+        default=None,
     )
     user = models.ForeignKey(
-        "apps.users.User",
+        "users.User",
         on_delete=models.SET(get_sentinel_user),
         verbose_name=_("Owner of comment"),
     )

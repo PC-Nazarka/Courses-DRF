@@ -1,12 +1,9 @@
-from django.contrib.auth import get_user_model
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
 from apps.models import BaseModel
 
-
-def get_sentinel_user():
-    return get_user_model().objects.get_or_create(username="Deleted")[0]
+from .courses import get_sentinel_user
 
 
 class Review(BaseModel):
@@ -19,7 +16,7 @@ class Review(BaseModel):
         verbose_name=_("Review of course by user"),
     )
     user = models.ForeignKey(
-        "apps.users.User",
+        "users.User",
         on_delete=models.SET(get_sentinel_user),
         verbose_name=_("Owner of review"),
     )
