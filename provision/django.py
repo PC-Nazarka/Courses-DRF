@@ -58,12 +58,6 @@ def resetdb(context, apply_migrations=True):
     set_default_site(context)
 
 
-@task
-def startapp(context, app_name=""):
-    """Create new app."""
-    manage(context, f"startapp {app_name}")
-
-
 def set_default_site(context):
     """Set default site to localhost.
 
