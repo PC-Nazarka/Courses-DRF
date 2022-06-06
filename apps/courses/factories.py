@@ -40,6 +40,9 @@ class CourseFactory(factory.django.DjangoModelFactory):
     category = factory.SubFactory(
         CategoryFactory,
     )
+    owner = factory.SubFactory(
+        UserFactory,
+    )
 
     class Meta:
         model = models.Course

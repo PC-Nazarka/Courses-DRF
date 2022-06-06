@@ -28,6 +28,8 @@ class Course(BaseModel):
     image = models.ImageField(
         upload_to=get_directory_path,
         verbose_name=_("Image of course"),
+        blank=True,
+        null=True,
     )
     price = models.DecimalField(
         decimal_places=2,
@@ -39,12 +41,18 @@ class Course(BaseModel):
     students = models.ManyToManyField(
         "users.User",
         verbose_name=_("One of students"),
-        related_name="courses",
+        related_name="courses_student",
     )
     category = models.ForeignKey(
         "Category",
         on_delete=models.CASCADE,
         verbose_name=_("Category of course"),
+        related_name="courses",
+    )
+    owner = models.ForeignKey(
+        "users.User",
+        on_delete=models.CASCADE,
+        verbose_name=_("Owner of course"),
         related_name="courses",
     )
 
