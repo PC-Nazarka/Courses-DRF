@@ -1,30 +1,30 @@
-from rest_framework import generics, status, views, viewsets
+from rest_framework import generics, status, viewsets
 from rest_framework.response import Response
 
+from apps.core.service import PaginationObject
 from apps.users.models import User
 
 from . import models, serializers
 
 
-class CourseViewSet(viewsets.ModelViewSet):
+class BaseViewSet(viewsets.ModelViewSet):
+    """Base ViewSet for other views."""
+
+    pagination_class = PaginationObject
+
+
+class CourseViewSet(BaseViewSet):
     """ViewSet for Course model."""
 
+    serializer_class = serializers.CourseSerializer
     queryset = models.Course.objects.all()
 
     def perform_create(self, serializer) -> None:
         """Overriden for create instanse and get User instanse from request."""
         serializer.save(owner=self.request.user)
 
-    def get_serializer_class(self):
-        """Get serializer class in dependencies of action."""
-        return (
-            serializers.CourseReadSerializer
-            if self.action in ("list", "retrieve")
-            else serializers.CourseWriteSerializer
-        )
 
-
-class AddStudentsToCourseView(views.APIView):
+class AddStudentsToCourseView(generics.GenericAPIView):
     """View for add student to course."""
 
     def post(self, request, *args, **kwargs):
@@ -38,86 +38,58 @@ class AddStudentsToCourseView(views.APIView):
         return Response(status=status.HTTP_200_OK)
 
 
-class TopicViewSet(viewsets.ModelViewSet):
+class TopicViewSet(BaseViewSet):
     """ViewSet for Topic model."""
 
+    serializer_class = serializers.TopicSerializer
     queryset = models.Topic.objects.all()
 
-    def get_serializer_class(self):
-        """Get serializer class in dependencies of action."""
-        return (
-            serializers.TopicReadSerializer
-            if self.action in ("list", "retrieve")
-            else serializers.TopicWriteSerializer
-        )
 
-
-class TaskViewSet(viewsets.ModelViewSet):
+class TaskViewSet(BaseViewSet):
     """ViewSet for Task model."""
 
+    serializer_class = serializers.TaskSerializer
     queryset = models.Task.objects.all()
 
-    def get_serializer_class(self):
-        """Get serializer class in dependencies of action."""
-        return (
-            serializers.TaskReadSerializer
-            if self.action in ("list", "retrieve")
-            else serializers.TaskWriteSerializer
-        )
 
-
-class AnswerViewSet(viewsets.ModelViewSet):
+class AnswerViewSet(BaseViewSet):
     """ViewSet for Answer model."""
 
     serializer_class = serializers.AnswerSerializer
     queryset = models.Answer.objects.all()
 
 
-class CommentViewSet(viewsets.ModelViewSet):
+class CommentViewSet(BaseViewSet):
     """ViewSet for Comment model."""
 
+    serializer_class = serializers.CommentSerializer
     queryset = models.Comment.objects.all()
 
     def perform_create(self, serializer) -> None:
         """Overriden for create instanse and get User instanse from request."""
         serializer.save(user=self.request.user)
 
-    def get_serializer_class(self):
-        """Get serializer class in dependencies of action."""
-        return (
-            serializers.CommentReadSerializer
-            if self.action in ("list", "retrieve")
-            else serializers.CommentWriteSerializer
-        )
 
-
-class ReviewViewSet(viewsets.ModelViewSet):
+class ReviewViewSet(BaseViewSet):
     """ViewSet for Review model."""
 
+    serializer_class = serializers.ReviewSeriaizer
     queryset = models.Review.objects.all()
 
     def perform_create(self, serializer) -> None:
         """Overriden for create instanse and get User instanse from request."""
         serializer.save(user=self.request.user)
 
-    def get_serializer_class(self):
-        """Get serializer class in dependencies of action."""
-        return (
-            serializers.ReviewReadSeriaizer
-            if self.action in ("list", "retrieve")
-            else serializers.ReviewWriteSeriaizer
-        )
-
 
 class CategoryListAPIView(generics.ListAPIView):
     """APIView for get list instanses of Category model."""
 
-    serializer_class = serializers.CategoryReadSerializer
+    serializer_class = serializers.CategorySerializer
     queryset = models.Category.objects.all()
 
 
 class CategoryAPIView(generics.RetrieveAPIView):
     """APIView for get instanse of Category model."""
 
-    serializer_class = serializers.CategoryReadSerializer
+    serializer_class = serializers.CategorySerializer
     queryset = models.Category.objects.all()

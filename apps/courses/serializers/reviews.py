@@ -3,31 +3,14 @@ from rest_framework import serializers
 from .. import models
 
 
-class ReviewWriteSeriaizer(serializers.ModelSerializer):
-    """Serializer for Review model."""
-
-    course = serializers.PrimaryKeyRelatedField(
-        queryset=models.Course.objects.all(),
-    )
-
-    class Meta:
-        model = models.Review
-        fields = (
-            "id",
-            "rating",
-            "review",
-            "course",
-        )
-
-
-class ReviewReadSeriaizer(serializers.ModelSerializer):
-    """Serializer for Review model."""
+class ReviewSeriaizer(serializers.ModelSerializer):
+    """Serializer for representing `Review`."""
 
     user = serializers.PrimaryKeyRelatedField(
         read_only=True,
     )
     course = serializers.PrimaryKeyRelatedField(
-        read_only=True,
+        queryset=models.Course.objects.all(),
     )
 
     class Meta:

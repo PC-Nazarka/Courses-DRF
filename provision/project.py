@@ -37,10 +37,11 @@ def init(context):
     install_tools(context)
     install_requirements(context)
     docker.build(context)
-    django.manage(context, "migrate")
+    django.migrate(context)
     django.set_default_site(context)
     tests.pytest(context)
     django.createsuperuser(context)
+    common.success("Generate sample data")
     try:
         fill_sample_data(context)
     except NotImplementedError:

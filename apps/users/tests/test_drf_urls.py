@@ -6,12 +6,12 @@ pytestmark = pytest.mark.django_db
 
 def test_user_detail(user):
     assert (
-        reverse("api:user-detail", kwargs={"pk": user.id})
-        == f"/api/v1/users/{user.id}/"
+        reverse("user:user-detail", kwargs={"id": user.id})
+        == f"/api/v1/auth/users/{user.id}/"
     )
-    assert resolve(f"/api/v1/users/{user.id}/").view_name == "api:user-detail"
+    assert resolve(f"/api/v1/auth/users/{user.id}/").view_name == "user:user-detail"
 
 
 def test_user_list():
-    assert reverse("api:user-list") == "/api/v1/users/"
-    assert resolve("/api/v1/users/").view_name == "api:user-list"
+    assert reverse("user:user-list") == "/api/v1/auth/users/"
+    assert resolve("/api/v1/auth/users/").view_name == "user:user-list"

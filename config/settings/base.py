@@ -79,9 +79,13 @@ THIRD_PARTY_APPS = [
     "djoser",
     "rest_framework_simplejwt",
     "rest_framework_simplejwt.token_blacklist",
+    "oauth2_provider",
+    "social_django",
+    "rest_framework_social_oauth2",
 ]
 
 LOCAL_APPS = [
+    "apps.core",
     "apps.users",
     "apps.courses",
     # Your stuff: custom apps go here
@@ -93,6 +97,8 @@ INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
 # ------------------------------------------------------------------------------
 # https://docs.djangoproject.com/en/dev/ref/settings/#authentication-backends
 AUTHENTICATION_BACKENDS = [
+    "social_core.backends.vk.VKOAuth2",
+    "rest_framework_social_oauth2.backends.DjangoOAuth2",
     "django.contrib.auth.backends.ModelBackend",
 ]
 AUTH_USER_MODEL = "users.User"
@@ -276,9 +282,13 @@ REST_FRAMEWORK = {
         "rest_framework_simplejwt.authentication.JWTAuthentication",
         "rest_framework.authentication.SessionAuthentication",
         "rest_framework.authentication.TokenAuthentication",
+        "oauth2_provider.contrib.rest_framework.OAuth2Authentication",
+        "rest_framework_social_oauth2.authentication.SocialAuthentication",
     ),
     "DEFAULT_PERMISSION_CLASSES": ("rest_framework.permissions.IsAuthenticated",),
     "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
+    "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.LimitOffsetPagination",
+    "PAGE_SIZE": 5,
 }
 
 # django-cors-headers - https://github.com/adamchainz/django-cors-headers#setup
@@ -295,10 +305,10 @@ DJOSER = {
     "PASSWORD_RESET_CONFIRM_URL": "reset/password/confirm/{uid}/{token}",
     "ACTIVATION_URL": "activate/{uid}/{token}",
     "SERIALIZERS": {
-        "user_create": "apps.users.serializers.UserWriteSerializer",  # custom serializer
-        "user": "apps.users.serializers.UserReadSerializer",
-        "current_user": "apps.users.serializers.UserReadSerializer",
-        "user_delete": "apps.users.serializers.UserWriteSerializer",
+        "user_create": "apps.users.serializers.UserSerializer",  # custom serializer
+        "user": "apps.users.serializers.UserSerializer",
+        "current_user": "apps.users.serializers.UserSerializer",
+        "user_delete": "apps.users.serializers.UserSerializer",
     },
 }
 

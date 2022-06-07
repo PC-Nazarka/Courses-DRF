@@ -9,10 +9,8 @@ from apps.courses.views import (
     TaskViewSet,
     TopicViewSet,
 )
-from apps.users.views import UserViewSet
 
 router = DefaultRouter() if settings.DEBUG else SimpleRouter()
-router.register("users", UserViewSet, basename="user")
 router.register("courses", CourseViewSet, basename="course")
 router.register("topics", TopicViewSet, basename="topic")
 router.register("tasks", TaskViewSet, basename="task")

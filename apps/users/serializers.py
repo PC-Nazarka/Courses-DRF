@@ -1,28 +1,17 @@
 from django.contrib.auth import get_user_model
 from rest_framework import serializers
 
-User = get_user_model()
 
-
-class UserWriteSerializer(serializers.ModelSerializer):
-    """Serializer for User model."""
+class UserSerializer(serializers.ModelSerializer):
+    """Serializer for representation `User`."""
 
     class Meta:
-        model = User
-        fields = "__all__"
-
-
-class UserReadSerializer(serializers.ModelSerializer):
-    """Serializer for User model."""
-
-    class Meta:
-        model = User
-        fields = (
-            "id",
-            "username",
-            "first_name",
-            "last_name",
-            "email",
-            "date_joined",
-            "description",
+        model = get_user_model()
+        exclude = (
+            "password",
+            "is_superuser",
+            "is_staff",
+            "is_active",
+            "groups",
+            "user_permissions",
         )

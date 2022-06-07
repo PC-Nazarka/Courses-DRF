@@ -7,7 +7,7 @@ urlpatterns = [
     path(
         "courses/<int:pk>/add-student/",
         views.AddStudentsToCourseView.as_view(),
-        name="add-students",
+        name="add-students/",
     ),
     path(
         "categories/",
