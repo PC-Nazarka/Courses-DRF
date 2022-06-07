@@ -295,10 +295,10 @@ DJOSER = {
     "PASSWORD_RESET_CONFIRM_URL": "reset/password/confirm/{uid}/{token}",
     "ACTIVATION_URL": "activate/{uid}/{token}",
     "SERIALIZERS": {
-        "user_create": "apps.users.serializers.UserCreateSerializer",  # custom serializer
-        "user": "apps.users.serializers.UserSerializer",
-        "current_user": "apps.users.serializers.UserSerializer",
-        "user_delete": "apps.users.serializers.UserSerializer",
+        "user_create": "apps.users.serializers.UserWriteSerializer",  # custom serializer
+        "user": "apps.users.serializers.UserReadSerializer",
+        "current_user": "apps.users.serializers.UserReadSerializer",
+        "user_delete": "apps.users.serializers.UserWriteSerializer",
     },
 }
 

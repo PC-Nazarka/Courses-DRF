@@ -7,5 +7,12 @@ from . import serializers
 class UserViewSet(viewsets.ModelViewSet):
     """ViewSet for User model."""
 
-    serializer_class = serializers.UserSerializer
     queryset = get_user_model().objects.all()
+
+    def get_serializer_class(self):
+        """Get serializer class in dependencies of action."""
+        return (
+            serializers.UserReadSerializer
+            if self.action in ("list", "retrieve")
+            else serializers.UserWriteSerializer
+        )

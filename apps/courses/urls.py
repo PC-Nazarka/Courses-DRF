@@ -8,5 +8,15 @@ urlpatterns = [
         "courses/<int:pk>/add-student/",
         views.AddStudentsToCourseView.as_view(),
         name="add-students",
-    )
+    ),
+    path(
+        "categories/",
+        views.CategoryListAPIView.as_view(),
+        name="list-categories",
+    ),
+    path(
+        "categories/<int:pk>/",
+        views.CategoryAPIView.as_view(),
+        name="category-object",
+    ),
 ]

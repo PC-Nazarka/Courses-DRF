@@ -68,7 +68,7 @@ class TopicFactory(factory.django.DjangoModelFactory):
 class TaskFactory(factory.django.DjangoModelFactory):
     """Factory for generates test Task instanse."""
 
-    type_task = fuzzy.FuzzyChoice([item[0] for item in models.Task.Type.choices])
+    type_task = fuzzy.FuzzyChoice([item[0] for item in models.Task.TypeTask.choices])
     title = factory.Faker(
         "currency_name",
     )

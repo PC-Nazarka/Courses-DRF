@@ -27,6 +27,10 @@ class Review(BaseModel):
         related_name="reviews",
     )
 
+    def __str__(self) -> str:
+        """String representation of object."""
+        return f"Review {self.rating}, review {self.review[:10]}"
+
     class Meta:
         verbose_name_plural = _("Reviews")
         verbose_name = _("Review")

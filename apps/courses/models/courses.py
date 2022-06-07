@@ -56,6 +56,10 @@ class Course(BaseModel):
         related_name="courses",
     )
 
+    def __str__(self) -> str:
+        """String representation of object."""
+        return f"Course {self.name}"
+
     class Meta:
         verbose_name_plural = _("Courses")
         verbose_name = _("Course")
@@ -68,6 +72,10 @@ class Category(BaseModel):
         max_length=128,
         verbose_name=_("Name of category"),
     )
+
+    def __str__(self) -> str:
+        """String representation of object."""
+        return f"Category {self.name}"
 
     class Meta:
         verbose_name_plural = _("Categories")
@@ -91,6 +99,10 @@ class Topic(BaseModel):
         related_name="topics",
     )
 
+    def __str__(self) -> str:
+        """String representation of object."""
+        return f"Topic {self.title}, number {self.number}"
+
     class Meta:
         verbose_name_plural = _("Topics")
         verbose_name = _("Topic")
@@ -104,7 +116,7 @@ class Task(BaseModel):
         Test: in body of task exist information and questions
     """
 
-    class Type(models.TextChoices):
+    class TypeTask(models.TextChoices):
         """Class choices."""
 
         INFORMATION = "INFORMATION", _("Information")
@@ -113,7 +125,7 @@ class Task(BaseModel):
     type_task = models.CharField(
         max_length=255,
         verbose_name=_("Type"),
-        choices=Type.choices,
+        choices=TypeTask.choices,
     )
     title = models.CharField(
         max_length=255,
@@ -128,6 +140,10 @@ class Task(BaseModel):
         verbose_name=_("Task of topic"),
         related_name="tasks",
     )
+
+    def __str__(self) -> str:
+        """String representation of object."""
+        return f"Task {self.type_task}, title {self.title}"
 
     class Meta:
         verbose_name_plural = _("Tasks")
@@ -150,6 +166,10 @@ class Answer(BaseModel):
         verbose_name=_("Task of answers"),
         related_name="answers",
     )
+
+    def __str__(self) -> str:
+        """String representation of object."""
+        return f"Answer {self.content}, is_true {self.is_true}"
 
     class Meta:
         verbose_name_plural = _("Answers")
@@ -182,6 +202,10 @@ class Comment(BaseModel):
         on_delete=models.SET(get_sentinel_user),
         verbose_name=_("Owner of comment"),
     )
+
+    def __str__(self) -> str:
+        """String representation of object."""
+        return f"Comment {self.content}"
 
     class Meta:
         verbose_name_plural = _("Comments")

@@ -1,10 +1,13 @@
 from .courses import (
     AnswerSerializer,
-    CategorySerializer,
-    CommentSerializer,
-    CourseCreateSerializer,
-    CourseSerializer,
-    TaskSerializer,
-    TopicSerializer,
+    CategoryReadSerializer,
+    CommentReadSerializer,
+    CommentWriteSerializer,
+    CourseReadSerializer,
+    CourseWriteSerializer,
+    TaskReadSerializer,
+    TaskWriteSerializer,
+    TopicReadSerializer,
+    TopicWriteSerializer,
 )
-from .reviews import ReviewSeriaizer
+from .reviews import ReviewReadSeriaizer, ReviewWriteSeriaizer
