@@ -6,4 +6,4 @@ from .courses import (
     TaskSerializer,
     TopicSerializer,
 )
-from .reviews import ReviewSeriaizer
+from .reviews import ReviewSerializer

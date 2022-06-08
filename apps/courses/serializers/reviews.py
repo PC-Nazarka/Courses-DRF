@@ -3,7 +3,7 @@ from rest_framework import serializers
 from .. import models
 
 
-class ReviewSeriaizer(serializers.ModelSerializer):
+class ReviewSerializer(serializers.ModelSerializer):
     """Serializer for representing `Review`."""
 
     user = serializers.PrimaryKeyRelatedField(

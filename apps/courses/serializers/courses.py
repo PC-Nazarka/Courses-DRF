@@ -134,6 +134,7 @@ class CommentSerializer(serializers.ModelSerializer):
     )
     parent = serializers.PrimaryKeyRelatedField(
         queryset=models.Comment.objects.all(),
+        allow_null=True,
     )
     user = serializers.PrimaryKeyRelatedField(
         read_only=True,

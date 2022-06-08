@@ -9,13 +9,17 @@ class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = get_user_model()
-        exclude = (
-            "password",
-            "is_superuser",
-            "is_staff",
-            "is_active",
-            "groups",
-            "user_permissions",
+        fields = (
+            "id",
+            "last_login",
+            "username",
+            "first_name",
+            "last_name",
+            "email",
+            "date_joined",
+            "description",
+            "courses_student",
+            "courses",
         )
 
 

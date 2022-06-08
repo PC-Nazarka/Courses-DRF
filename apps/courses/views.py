@@ -1,16 +1,9 @@
-from rest_framework import generics, status, viewsets
-from rest_framework.response import Response
+from rest_framework import generics, response, status
 
-from apps.core.service import PaginationObject
+from apps.core.views import BaseViewSet, SimpleBaseViewSet
 from apps.users.models import User
 
-from . import models, serializers
-
-
-class BaseViewSet(viewsets.ModelViewSet):
-    """Base ViewSet for other views."""
-
-    pagination_class = PaginationObject
+from . import models, permissions, serializers
 
 
 class CourseViewSet(BaseViewSet):
@@ -18,6 +11,7 @@ class CourseViewSet(BaseViewSet):
 
     serializer_class = serializers.CourseSerializer
     queryset = models.Course.objects.all()
+    permission_classes = (permissions.IsCreatorOrStudent,)
 
     def perform_create(self, serializer) -> None:
         """Overriden for create instanse and get User instanse from request."""
@@ -35,46 +29,51 @@ class AddStudentsToCourseView(generics.GenericAPIView):
             course.students.remove(user)
         else:
             course.students.add(user)
-        return Response(status=status.HTTP_200_OK)
+        return response.Response(status=status.HTTP_200_OK)
 
 
-class TopicViewSet(BaseViewSet):
+class TopicViewSet(SimpleBaseViewSet):
     """ViewSet for Topic model."""
 
     serializer_class = serializers.TopicSerializer
     queryset = models.Topic.objects.all()
+    permission_classes = (permissions.IsCreatorOrStudent,)
 
 
-class TaskViewSet(BaseViewSet):
+class TaskViewSet(SimpleBaseViewSet):
     """ViewSet for Task model."""
 
     serializer_class = serializers.TaskSerializer
     queryset = models.Task.objects.all()
+    permission_classes = (permissions.IsCreatorOrStudent,)
 
 
-class AnswerViewSet(BaseViewSet):
+class AnswerViewSet(SimpleBaseViewSet):
     """ViewSet for Answer model."""
 
     serializer_class = serializers.AnswerSerializer
     queryset = models.Answer.objects.all()
+    permission_classes = (permissions.IsCreatorOrStudent,)
 
 
-class CommentViewSet(BaseViewSet):
+class CommentViewSet(SimpleBaseViewSet):
     """ViewSet for Comment model."""
 
     serializer_class = serializers.CommentSerializer
     queryset = models.Comment.objects.all()
+    permission_classes = (permissions.IsCreatorOrStudent,)
 
     def perform_create(self, serializer) -> None:
         """Overriden for create instanse and get User instanse from request."""
         serializer.save(user=self.request.user)
 
 
-class ReviewViewSet(BaseViewSet):
+class ReviewViewSet(SimpleBaseViewSet):
     """ViewSet for Review model."""
 
-    serializer_class = serializers.ReviewSeriaizer
+    serializer_class = serializers.ReviewSerializer
     queryset = models.Review.objects.all()
+    permission_classes = (permissions.IsCreatorOrStudent,)
 
     def perform_create(self, serializer) -> None:
         """Overriden for create instanse and get User instanse from request."""

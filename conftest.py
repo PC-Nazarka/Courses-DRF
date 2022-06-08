@@ -1,6 +1,5 @@
 import pytest
 from rest_framework import test
-from rest_framework_simplejwt.tokens import RefreshToken
 
 from apps.users.factories import UserFactory
 
@@ -30,12 +29,3 @@ def auth_client(user, client):
 def api_client() -> test.APIClient:
     """Create api client."""
     return test.APIClient()
-
-
-@pytest.fixture
-def api_client_auth(user):
-    """Fixture for authtorized api client with JWT."""
-    client = test.APIClient()
-    refresh = RefreshToken.for_user(user)
-    client.credentials(HTTP_AUTHORIZATION=f"JWT {refresh.access_token}")
-    return client
