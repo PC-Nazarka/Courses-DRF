@@ -159,3 +159,95 @@ def test_add_and_remove_student(
         )
     )
     assert user not in course.students.all()
+
+
+def test_add_and_remove_passing(
+    user,
+    api_client,
+) -> None:
+    """Test add and remove passing."""
+    course = factories.CourseFactory.create()
+    api_client.force_authenticate(user=user)
+    api_client.post(
+        reverse_lazy(
+            "courses:add-passing",
+            kwargs={"pk": course.pk},
+        )
+    )
+    assert user in course.passers_users.all()
+    api_client.post(
+        reverse_lazy(
+            "courses:add-passing",
+            kwargs={"pk": course.pk},
+        )
+    )
+    assert user not in course.passers_users.all()
+
+
+def test_add_and_remove_interest(
+    user,
+    api_client,
+) -> None:
+    """Test add and remove interest."""
+    course = factories.CourseFactory.create()
+    api_client.force_authenticate(user=user)
+    api_client.post(
+        reverse_lazy(
+            "courses:add-interest",
+            kwargs={"pk": course.pk},
+        )
+    )
+    assert user in course.interest_users.all()
+    api_client.post(
+        reverse_lazy(
+            "courses:add-interest",
+            kwargs={"pk": course.pk},
+        )
+    )
+    assert user not in course.interest_users.all()
+
+
+def test_add_and_remove_wanted_passing(
+    user,
+    api_client,
+) -> None:
+    """Test add and remove wanted passing."""
+    course = factories.CourseFactory.create()
+    api_client.force_authenticate(user=user)
+    api_client.post(
+        reverse_lazy(
+            "courses:add-wanted-passing",
+            kwargs={"pk": course.pk},
+        )
+    )
+    assert user in course.want_pass_users.all()
+    api_client.post(
+        reverse_lazy(
+            "courses:add-wanted-passing",
+            kwargs={"pk": course.pk},
+        )
+    )
+    assert user not in course.want_pass_users.all()
+
+
+def test_add_and_remove_achive(
+    user,
+    api_client,
+) -> None:
+    """Test add and remove achive."""
+    course = factories.CourseFactory.create()
+    api_client.force_authenticate(user=user)
+    api_client.post(
+        reverse_lazy(
+            "courses:add-achive",
+            kwargs={"pk": course.pk},
+        )
+    )
+    assert user in course.archive_users.all()
+    api_client.post(
+        reverse_lazy(
+            "courses:add-achive",
+            kwargs={"pk": course.pk},
+        )
+    )
+    assert user not in course.archive_users.all()

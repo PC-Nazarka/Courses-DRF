@@ -10,6 +10,26 @@ urlpatterns = [
         name="add-students",
     ),
     path(
+        "courses/<int:pk>/add-passing/",
+        views.AddCourseToPassingView.as_view(),
+        name="add-passing",
+    ),
+    path(
+        "courses/<int:pk>/add-interest/",
+        views.AddCourseToInterestView.as_view(),
+        name="add-interest",
+    ),
+    path(
+        "courses/<int:pk>/add-wanted-passing/",
+        views.AddCourseToWantedPassingView.as_view(),
+        name="add-wanted-passing",
+    ),
+    path(
+        "courses/<int:pk>/add-achive/",
+        views.AddCourseToAchiveView.as_view(),
+        name="add-achive",
+    ),
+    path(
         "categories/",
         views.CategoryListAPIView.as_view(),
         name="list-categories",

@@ -41,8 +41,8 @@ def init(context):
     django.set_default_site(context)
     tests.pytest(context)
     django.createsuperuser(context)
-    common.success("Generate sample data")
     try:
+        common.success("Generate sample data")
         fill_sample_data(context)
     except NotImplementedError:
         common.warn(

@@ -1,3 +1,5 @@
+from decimal import Decimal
+
 from django.contrib.auth import get_user_model
 from django.db import models
 from django.utils.translation import gettext_lazy as _
@@ -35,13 +37,32 @@ class Course(BaseModel):
         decimal_places=2,
         max_digits=11,
         verbose_name=_("Price of course"),
-        null=True,
-        blank=True,
+        default=Decimal("0.0"),
     )
     students = models.ManyToManyField(
         "users.User",
         verbose_name=_("One of students"),
         related_name="courses_student",
+    )
+    passers_users = models.ManyToManyField(
+        "users.User",
+        verbose_name=_("Passes users"),
+        related_name="pass_courses",
+    )
+    interest_users = models.ManyToManyField(
+        "users.User",
+        verbose_name=_("Users mean, that this course is interesting"),
+        related_name="favorite_courses",
+    )
+    want_pass_users = models.ManyToManyField(
+        "users.User",
+        verbose_name=_("Users who want pass course"),
+        related_name="want_pass_courses",
+    )
+    archive_users = models.ManyToManyField(
+        "users.User",
+        verbose_name=_("Users who add course in archive"),
+        related_name="archive_courses",
     )
     category = models.ForeignKey(
         "Category",

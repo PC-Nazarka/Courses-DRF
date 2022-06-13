@@ -37,6 +37,16 @@ class IsCreatorOrStudent(permissions.BasePermission):
                     return request.user.id == course.owner.id
                 return True
 
+            if request.method == "GET":
+                if view.basename in ("course", "topic"):
+                    return True
+                return any(
+                    [
+                        request.user.id == course.owner.id,
+                        request.user in course.students.all(),
+                    ]
+                )
+
             data = {}
             match view.basename:
                 case "answer":
@@ -65,14 +75,6 @@ class IsCreatorOrStudent(permissions.BasePermission):
                 course = get_course_instanse(data)
             if request.method in ("PUT", "PATCH", "DELETE"):
                 return request.user.id == course.owner.id
-
-            if request.method == "GET":
-                return any(
-                    [
-                        request.user.id == course.owner.id,
-                        request.user in course.students.all(),
-                    ]
-                )
 
         if view.basename in ("comment", "review"):
             if request.method == "POST":
