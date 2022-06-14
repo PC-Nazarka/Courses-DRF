@@ -53,6 +53,7 @@ class CourseSerializer(serializers.ModelSerializer):
             "students",
             "category",
             "owner",
+            "status",
             "topics",
             "reviews",
             "created",

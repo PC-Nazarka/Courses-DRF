@@ -19,6 +19,34 @@ def get_course_instanse(data: dict) -> models.Course:
         return models.Course.objects.get(pk=data["course"])
 
 
+def course_is_ready(view, request) -> bool:
+    """Check status of course.
+
+    If page of list of courses - return True, else if page of one course -
+    check status.
+    """
+    if view.basename == "topic":
+        data = serializers.TopicSerializer(
+            models.Topic.objects.get(
+                pk=request.parser_context["kwargs"]["pk"],
+            ),
+        ).data
+        course = get_course_instanse(data)
+        if course.owner.id == request.user.id:
+            return True
+        return course.status == models.Course.Status.READY
+
+    if "pk" in request.parser_context["kwargs"]:
+        course = models.Course.objects.get(
+            pk=request.parser_context["kwargs"]["pk"],
+        )
+        if course.owner.id == request.user.id:
+            return True
+        return course.status == models.Course.Status.READY
+
+    return True
+
+
 class IsCreatorOrStudent(permissions.BasePermission):
     """Custom permission for let change object by creator or student."""
 
@@ -39,7 +67,7 @@ class IsCreatorOrStudent(permissions.BasePermission):
 
             if request.method == "GET":
                 if view.basename in ("course", "topic"):
-                    return True
+                    return course_is_ready(view, request)
                 return any(
                     [
                         request.user.id == course.owner.id,

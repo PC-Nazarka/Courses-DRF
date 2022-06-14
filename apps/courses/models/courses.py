@@ -18,8 +18,24 @@ def get_sentinel_user():
 
 
 class Course(BaseModel):
-    """Model for Course."""
+    """Model for Course.
 
+    Statuses of course:
+        Draft: course is not ready for public
+        Ready: course is ready for public or already public
+    """
+
+    class Status(models.TextChoices):
+        """Class choices."""
+
+        DRAFT = "DRAFT", _("Draft")
+        READY = "READY", _("Ready")
+
+    status = models.CharField(
+        max_length=255,
+        verbose_name=_("Status of course"),
+        choices=Status.choices,
+    )
     name = models.CharField(
         max_length=128,
         verbose_name=_("Name of course"),

@@ -21,6 +21,9 @@ class CategoryFactory(factory.django.DjangoModelFactory):
 class CourseFactory(factory.django.DjangoModelFactory):
     """Factory for generates test Course instanse."""
 
+    status = fuzzy.FuzzyChoice(
+        [item[0] for item in models.Course.Status.choices],
+    )
     name = factory.Faker(
         "currency_name",
     )
@@ -68,7 +71,9 @@ class TopicFactory(factory.django.DjangoModelFactory):
 class TaskFactory(factory.django.DjangoModelFactory):
     """Factory for generates test Task instanse."""
 
-    type_task = fuzzy.FuzzyChoice([item[0] for item in models.Task.TypeTask.choices])
+    type_task = fuzzy.FuzzyChoice(
+        [item[0] for item in models.Task.TypeTask.choices],
+    )
     title = factory.Faker(
         "currency_name",
     )

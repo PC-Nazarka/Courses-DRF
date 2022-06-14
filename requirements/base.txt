@@ -22,4 +22,3 @@ djangorestframework-simplejwt==4.8.0
 django-cors-headers==3.11.0
 # DRF-spectacular for api documentation
 drf-spectacular==0.22.1
-bleach

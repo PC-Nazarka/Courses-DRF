@@ -1,6 +1,6 @@
 from rest_framework import mixins, viewsets
 
-from apps.core.service import PaginationObject
+from apps.core.services.pagination import PaginationObject
 
 
 class BaseViewSet(viewsets.ModelViewSet):

@@ -1,0 +1,17 @@
+{% extends "email_base.html" %}
+{% load i18n %}
+
+{% block email_body %}
+  {% autoescape off %}
+    {% blocktrans with app_label=app_label course=course count_students=count_students%}
+      <p>Hello from {{ app_label }}!</p>
+      <p>
+        The number of students in your course "{{ course }}" is {{ count_students }}. <br>
+        Congratulations you!
+      </p>
+    {% endblocktrans %}
+    {% blocktrans with app_label=app_label %}
+      <p>Thank you for using {{ app_label }}!</p>
+    {% endblocktrans %}
+  {% endautoescape %}
+{% endblock %}

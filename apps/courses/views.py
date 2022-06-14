@@ -1,22 +1,50 @@
 from django.db.models import Q
 from rest_framework import generics, response, status
 
-from apps.core.views import BaseViewSet, SimpleBaseViewSet
+from apps.core import services, views
 from apps.users.models import User
 
 from . import models, permissions, serializers
 
 
-class CourseViewSet(BaseViewSet):
+class CourseViewSet(views.BaseViewSet):
     """ViewSet for Course model."""
 
     serializer_class = serializers.CourseSerializer
-    queryset = models.Course.objects.all()
+    queryset = models.Course.objects.filter(status=models.Course.Status.READY)
     permission_classes = (permissions.IsCreatorOrStudent,)
+
+    def get_object(self) -> models.Course:
+        """Overriden for get object, because some object hasn't status `READY`."""
+        return models.Course.objects.get(pk=self.kwargs["pk"])
 
     def perform_create(self, serializer) -> None:
         """Overriden for create instanse and get User instanse from request."""
         serializer.save(owner=self.request.user)
+        if serializer.data["status"] == models.Course.Status.READY:
+            services.send_email(
+                "create",
+                self.request.user,
+                course=models.Course.objects.get(pk=serializer.data["id"]),
+            )
+
+    def perform_update(self, serializer) -> None:
+        """Overriden for update instanse and get User instanse from request."""
+        status = models.Course.objects.get(
+            pk=self.request.parser_context["kwargs"]["pk"],
+        ).status
+        serializer.save()
+        if all(
+            [
+                status == models.Course.Status.DRAFT,
+                serializer.data["status"] == models.Course.Status.READY,
+            ]
+        ):
+            services.send_email(
+                "create",
+                self.request.user,
+                course=models.Course.objects.get(pk=serializer.data["id"]),
+            )
 
     def search_queryset(self, object_list):
         """Filter queryset by search query."""
@@ -46,7 +74,7 @@ class CourseViewSet(BaseViewSet):
 
     def get_queryset(self):
         """Get search result."""
-        object_list = models.Course.objects.all()
+        object_list = self.queryset
         object_list = self.search_queryset(object_list)
         object_list = self.filter_queryset(object_list)
         object_list = self.category_queryset(object_list)
@@ -64,9 +92,22 @@ class AddStudentsToCourseView(generics.GenericAPIView):
         if user in course.students.all():
             course.students.remove(user)
             message = "remove"
+            if user in course.passers_users.all():
+                course.passers_users.remove(user)
+            if user in course.interest_users.all():
+                course.interest_users.remove(user)
+            if user in course.want_pass_users.all():
+                course.want_pass_users.remove(user)
+            if user in course.archive_users.all():
+                course.archive_users.remove(user)
         else:
             course.students.add(user)
             message = "add"
+            services.send_email(
+                "entered",
+                request.user,
+                course=course,
+            )
         return response.Response(
             data={"message": f"Success {message} students to course"},
             status=status.HTTP_200_OK,
@@ -80,16 +121,25 @@ class AddCourseToPassingView(generics.GenericAPIView):
         """Handler POST request."""
         course = models.Course.objects.get(pk=self.kwargs["pk"])
         user = User.objects.get(pk=self.request.user.pk)
-        message = ""
-        if user in course.passers_users.all():
-            course.passers_users.remove(user)
-            message = "remove"
-        else:
-            course.passers_users.add(user)
-            message = "add"
+        if user in course.students.all():
+            message = ""
+            if user in course.passers_users.all():
+                course.passers_users.remove(user)
+                message = "remove"
+            else:
+                course.passers_users.add(user)
+                message = "add"
+            return response.Response(
+                data={
+                    "message": f"Success {message} course to passing",
+                },
+                status=status.HTTP_200_OK,
+            )
         return response.Response(
-            data={"message": f"Success {message} course to passing"},
-            status=status.HTTP_200_OK,
+            data={
+                "message": "User is not in students of course",
+            },
+            status=status.HTTP_404_NOT_FOUND,
         )
 
 
@@ -100,16 +150,23 @@ class AddCourseToInterestView(generics.GenericAPIView):
         """Handler POST request."""
         course = models.Course.objects.get(pk=self.kwargs["pk"])
         user = User.objects.get(pk=self.request.user.pk)
-        message = ""
-        if user in course.interest_users.all():
-            course.interest_users.remove(user)
-            message = "remove"
-        else:
-            course.interest_users.add(user)
-            message = "add"
+        if user in course.students.all():
+            message = ""
+            if user in course.interest_users.all():
+                course.interest_users.remove(user)
+                message = "remove"
+            else:
+                course.interest_users.add(user)
+                message = "add"
+            return response.Response(
+                data={"message": f"Success {message} course to interest"},
+                status=status.HTTP_200_OK,
+            )
         return response.Response(
-            data={"message": f"Success {message} course to interest"},
-            status=status.HTTP_200_OK,
+            data={
+                "message": "User is not in students of course",
+            },
+            status=status.HTTP_404_NOT_FOUND,
         )
 
 
@@ -120,16 +177,23 @@ class AddCourseToWantedPassingView(generics.GenericAPIView):
         """Handler POST request."""
         course = models.Course.objects.get(pk=self.kwargs["pk"])
         user = User.objects.get(pk=self.request.user.pk)
-        message = ""
-        if user in course.want_pass_users.all():
-            course.want_pass_users.remove(user)
-            message = "remove"
-        else:
-            course.want_pass_users.add(user)
-            message = "add"
+        if user in course.students.all():
+            message = ""
+            if user in course.want_pass_users.all():
+                course.want_pass_users.remove(user)
+                message = "remove"
+            else:
+                course.want_pass_users.add(user)
+                message = "add"
+            return response.Response(
+                data={"message": f"Success {message} course to wanted-passing"},
+                status=status.HTTP_200_OK,
+            )
         return response.Response(
-            data={"message": f"Success {message} course to wanted-passing"},
-            status=status.HTTP_200_OK,
+            data={
+                "message": "User is not in students of course",
+            },
+            status=status.HTTP_404_NOT_FOUND,
         )
 
 
@@ -140,16 +204,23 @@ class AddCourseToAchiveView(generics.GenericAPIView):
         """Handler POST request."""
         course = models.Course.objects.get(pk=self.kwargs["pk"])
         user = User.objects.get(pk=self.request.user.pk)
-        message = ""
-        if user in course.archive_users.all():
-            course.archive_users.remove(user)
-            message = "remove"
-        else:
-            course.archive_users.add(user)
-            message = "add"
+        if user in course.students.all():
+            message = ""
+            if user in course.archive_users.all():
+                course.archive_users.remove(user)
+                message = "remove"
+            else:
+                course.archive_users.add(user)
+                message = "add"
+            return response.Response(
+                data={"message": f"Success {message} course to achive"},
+                status=status.HTTP_200_OK,
+            )
         return response.Response(
-            data={"message": f"Success {message} course to achive"},
-            status=status.HTTP_200_OK,
+            data={
+                "message": "User is not in students of course",
+            },
+            status=status.HTTP_404_NOT_FOUND,
         )
 
 
@@ -195,7 +266,7 @@ class FilterCoursesView(generics.ListAPIView):
         return object_list
 
 
-class TopicViewSet(SimpleBaseViewSet):
+class TopicViewSet(views.SimpleBaseViewSet):
     """ViewSet for Topic model."""
 
     serializer_class = serializers.TopicSerializer
@@ -203,7 +274,7 @@ class TopicViewSet(SimpleBaseViewSet):
     permission_classes = (permissions.IsCreatorOrStudent,)
 
 
-class TaskViewSet(SimpleBaseViewSet):
+class TaskViewSet(views.SimpleBaseViewSet):
     """ViewSet for Task model."""
 
     serializer_class = serializers.TaskSerializer
@@ -211,7 +282,7 @@ class TaskViewSet(SimpleBaseViewSet):
     permission_classes = (permissions.IsCreatorOrStudent,)
 
 
-class AnswerViewSet(SimpleBaseViewSet):
+class AnswerViewSet(views.SimpleBaseViewSet):
     """ViewSet for Answer model."""
 
     serializer_class = serializers.AnswerSerializer
@@ -219,7 +290,7 @@ class AnswerViewSet(SimpleBaseViewSet):
     permission_classes = (permissions.IsCreatorOrStudent,)
 
 
-class CommentViewSet(SimpleBaseViewSet):
+class CommentViewSet(views.SimpleBaseViewSet):
     """ViewSet for Comment model."""
 
     serializer_class = serializers.CommentSerializer
@@ -231,7 +302,7 @@ class CommentViewSet(SimpleBaseViewSet):
         serializer.save(user=self.request.user)
 
 
-class ReviewViewSet(SimpleBaseViewSet):
+class ReviewViewSet(views.SimpleBaseViewSet):
     """ViewSet for Review model."""
 
     serializer_class = serializers.ReviewSerializer
