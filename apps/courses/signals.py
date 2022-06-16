@@ -1,4 +1,4 @@
-from django.db.models.signals import m2m_changed, post_save
+from django.db.models.signals import m2m_changed, post_delete, post_save
 from django.dispatch import receiver
 
 from . import models, tasks
@@ -34,3 +34,9 @@ def check_status_of_course(instance, created, update_fields, **kwargs):
             instance.owner.id,
             instance.id,
         )
+
+
+@receiver(post_delete, sender=models.Course)
+def delete_img_of_course_after_delete(instance, **kwargs):
+    """Signal when course has deleted."""
+    instance.image.storage.delete(instance.image.path)
