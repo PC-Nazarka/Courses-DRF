@@ -7,3 +7,6 @@ class CoursesConfig(AppConfig):
 
     name = "apps.courses"
     verbose_name = _("Courses")
+
+    def ready(self):
+        import apps.courses.signals  # noqa F401

@@ -27,7 +27,6 @@ def send_email(
         + "</ul>"
     )
     context["count_students"] = course.students.count()
-    print(context)
     html_content = html.render(context)
     msg = EmailMultiAlternatives(
         subject=user.username,

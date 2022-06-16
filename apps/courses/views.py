@@ -1,7 +1,7 @@
 from django.db.models import Q
 from rest_framework import generics, response, status
 
-from apps.core import services, views
+from apps.core import views
 from apps.users.models import User
 
 from . import models, permissions, serializers
@@ -21,30 +21,6 @@ class CourseViewSet(views.BaseViewSet):
     def perform_create(self, serializer) -> None:
         """Overriden for create instanse and get User instanse from request."""
         serializer.save(owner=self.request.user)
-        if serializer.data["status"] == models.Course.Status.READY:
-            services.send_email(
-                "create",
-                self.request.user,
-                course=models.Course.objects.get(pk=serializer.data["id"]),
-            )
-
-    def perform_update(self, serializer) -> None:
-        """Overriden for update instanse and get User instanse from request."""
-        status = models.Course.objects.get(
-            pk=self.request.parser_context["kwargs"]["pk"],
-        ).status
-        serializer.save()
-        if all(
-            [
-                status == models.Course.Status.DRAFT,
-                serializer.data["status"] == models.Course.Status.READY,
-            ]
-        ):
-            services.send_email(
-                "create",
-                self.request.user,
-                course=models.Course.objects.get(pk=serializer.data["id"]),
-            )
 
     def search_queryset(self, object_list):
         """Filter queryset by search query."""
@@ -103,11 +79,6 @@ class AddStudentsToCourseView(generics.GenericAPIView):
         else:
             course.students.add(user)
             message = "add"
-            services.send_email(
-                "entered",
-                request.user,
-                course=course,
-            )
         return response.Response(
             data={"message": f"Success {message} students to course"},
             status=status.HTTP_200_OK,

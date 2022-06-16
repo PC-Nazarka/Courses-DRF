@@ -18,6 +18,7 @@ def test_create_course(
         category=category,
         owner=user,
     )
+    print(course.status)
     api_client.force_authenticate(user=user)
     response = api_client.post(
         reverse_lazy("api:course-list"),

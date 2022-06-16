@@ -35,6 +35,7 @@ class Course(BaseModel):
         max_length=255,
         verbose_name=_("Status of course"),
         choices=Status.choices,
+        default=Status.DRAFT,
     )
     name = models.CharField(
         max_length=128,

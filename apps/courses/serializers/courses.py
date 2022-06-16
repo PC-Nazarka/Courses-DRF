@@ -42,6 +42,21 @@ class CourseSerializer(serializers.ModelSerializer):
         many=True,
     )
 
+    def validate_status(self, data):
+        """Check status when instance create."""
+        instance = getattr(self, "instance", None)
+        if instance is not None:
+            if all(
+                [
+                    data == models.Course.Status.DRAFT,
+                    instance.status == models.Course.Status.READY,
+                ]
+            ):
+                raise serializers.ValidationError(
+                    "You can't set DRAFT status after READY",
+                )
+        return data
+
     class Meta:
         model = models.Course
         fields = (

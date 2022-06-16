@@ -18,6 +18,8 @@ class CourseAdmin(admin.ModelAdmin):
         "description",
         "image",
         "price",
+        "created",
+        "modified",
     )
 
 
@@ -29,6 +31,8 @@ class CategoryAdmin(admin.ModelAdmin):
     list_display = (
         "id",
         "name",
+        "created",
+        "modified",
     )
 
 
@@ -42,6 +46,8 @@ class TopicAdmin(admin.ModelAdmin):
         "id",
         "title",
         "number",
+        "created",
+        "modified",
     )
 
 
@@ -55,6 +61,8 @@ class TaskAdmin(admin.ModelAdmin):
         "type_task",
         "title",
         "text",
+        "created",
+        "modified",
     )
 
 
@@ -68,6 +76,8 @@ class AnswerAdmin(admin.ModelAdmin):
         "id",
         "is_true",
         "content",
+        "created",
+        "modified",
     )
 
 
@@ -84,6 +94,8 @@ class CommentAdmin(admin.ModelAdmin):
     list_display = (
         "id",
         "content",
+        "created",
+        "modified",
     )
 
 
@@ -99,4 +111,6 @@ class ReviewAdmin(admin.ModelAdmin):
         "id",
         "rating",
         "review",
+        "created",
+        "modified",
     )
