@@ -6,17 +6,11 @@ from .. import models
 class CategorySerializer(serializers.ModelSerializer):
     """Serializer for representing `Category`."""
 
-    courses = serializers.PrimaryKeyRelatedField(
-        read_only=True,
-        many=True,
-    )
-
     class Meta:
         model = models.Category
         fields = (
             "id",
             "name",
-            "courses",
         )
 
 
@@ -41,6 +35,17 @@ class CourseSerializer(serializers.ModelSerializer):
         read_only=True,
         many=True,
     )
+    rating = serializers.SerializerMethodField(
+        "get_rating",
+    )
+
+    def get_rating(self, obj):
+        """Get rating of course."""
+        return (
+            sum([review.rating for review in obj.reviews.all()]) / obj.reviews.count()
+            if obj.reviews.count()
+            else 0
+        )
 
     def validate_status(self, data):
         """Check status when instance create."""
@@ -72,6 +77,7 @@ class CourseSerializer(serializers.ModelSerializer):
             "topics",
             "reviews",
             "created",
+            "rating",
         )
 
 

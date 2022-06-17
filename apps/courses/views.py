@@ -1,5 +1,7 @@
 from django.db.models import Q
-from rest_framework import generics, response, status
+from rest_framework import generics
+from rest_framework import permissions as permis
+from rest_framework import response, status
 
 from apps.core import views
 from apps.users.models import User
@@ -32,13 +34,6 @@ class CourseViewSet(views.BaseViewSet):
             )
         return object_list
 
-    def filter_queryset(self, object_list):
-        """Filter queryset by filter query."""
-        query_filter = self.request.GET.get("price")
-        if query_filter:
-            return object_list.filter(price=query_filter)
-        return object_list
-
     def category_queryset(self, object_list):
         """Filter queryset by cateofry query."""
         query_category = self.request.GET.get("category")
@@ -52,7 +47,6 @@ class CourseViewSet(views.BaseViewSet):
         """Get search result."""
         object_list = self.queryset
         object_list = self.search_queryset(object_list)
-        object_list = self.filter_queryset(object_list)
         object_list = self.category_queryset(object_list)
         return object_list
 
@@ -290,6 +284,7 @@ class CategoryListAPIView(generics.ListAPIView):
 
     serializer_class = serializers.CategorySerializer
     queryset = models.Category.objects.all()
+    permission_classes = (permis.AllowAny,)
 
 
 class CategoryAPIView(generics.RetrieveAPIView):
@@ -297,3 +292,4 @@ class CategoryAPIView(generics.RetrieveAPIView):
 
     serializer_class = serializers.CategorySerializer
     queryset = models.Category.objects.all()
+    permission_classes = (permis.AllowAny,)
