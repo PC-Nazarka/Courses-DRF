@@ -13,7 +13,9 @@ def test_create_comment_by_student(
     api_client,
 ) -> None:
     """Test comment creation by student."""
-    course = factories.CourseFactory.create()
+    course = factories.CourseFactory.create(
+        status=models.Course.Status.READY,
+    )
     course.students.add(user)
     topic = factories.TopicFactory.create(
         course=course,
@@ -31,7 +33,6 @@ def test_create_comment_by_student(
             "parent": "",
         },
     )
-    print(response.__dict__)
     assert response.status_code == status.HTTP_201_CREATED
     assert models.Comment.objects.filter(
         content=comment.content,
@@ -46,7 +47,9 @@ def test_create_comment_by_not_student(
     api_client,
 ) -> None:
     """Test comment creation by not student."""
-    course = factories.CourseFactory.create()
+    course = factories.CourseFactory.create(
+        status=models.Course.Status.READY,
+    )
     topic = factories.TopicFactory.create(
         course=course,
     )
@@ -70,7 +73,9 @@ def test_owner_update_comment(
     api_client,
 ) -> None:
     """Test update comment by owner."""
-    course = factories.CourseFactory.create()
+    course = factories.CourseFactory.create(
+        status=models.Course.Status.READY,
+    )
     course.students.add(user)
     topic = factories.TopicFactory.create(
         course=course,
@@ -107,7 +112,9 @@ def test_not_owner_update_comment(
 ) -> None:
     """Test update comment by another user."""
     another_user = UserFactory.create()
-    course = factories.CourseFactory.create()
+    course = factories.CourseFactory.create(
+        status=models.Course.Status.READY,
+    )
     topic = factories.TopicFactory.create(
         course=course,
     )
@@ -136,7 +143,9 @@ def test_owner_remove_comment(
     api_client,
 ) -> None:
     """Test comment review by owner."""
-    course = factories.CourseFactory.create()
+    course = factories.CourseFactory.create(
+        status=models.Course.Status.READY,
+    )
     course.students.add(user)
     topic = factories.TopicFactory.create(
         course=course,
@@ -160,7 +169,9 @@ def test_not_owner_remove_comment(
 ) -> None:
     """Test remove comment by another user."""
     another_user = UserFactory.create()
-    course = factories.CourseFactory.create()
+    course = factories.CourseFactory.create(
+        status=models.Course.Status.READY,
+    )
     course.students.add(user)
     topic = factories.TopicFactory.create(
         course=course,

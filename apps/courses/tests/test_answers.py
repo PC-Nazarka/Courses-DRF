@@ -14,6 +14,7 @@ def test_create_answer(
 ) -> None:
     """Test answer creation."""
     course = factories.CourseFactory.create(
+        status=models.Course.Status.READY,
         owner=user,
     )
     topic = factories.TopicFactory.create(
@@ -46,6 +47,7 @@ def test_owner_update_answer(
 ) -> None:
     """Test update answer by owner."""
     course = factories.CourseFactory.create(
+        status=models.Course.Status.READY,
         owner=user,
     )
     topic = factories.TopicFactory.create(
@@ -85,6 +87,7 @@ def test_not_owner_update_answer(
     """Test update answer by another user."""
     another_user = UserFactory.create()
     course = factories.CourseFactory.create(
+        status=models.Course.Status.READY,
         owner=user,
     )
     topic = factories.TopicFactory.create(
@@ -118,6 +121,7 @@ def test_owner_remove_answer(
 ) -> None:
     """Test remove answer by owner."""
     course = factories.CourseFactory.create(
+        status=models.Course.Status.READY,
         owner=user,
     )
     topic = factories.TopicFactory.create(
@@ -151,6 +155,7 @@ def test_not_owner_remove_answer(
     """Test remove answer by another user."""
     another_user = UserFactory.create()
     course = factories.CourseFactory.create(
+        status=models.Course.Status.READY,
         owner=user,
     )
     topic = factories.TopicFactory.create(

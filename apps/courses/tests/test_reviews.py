@@ -13,7 +13,9 @@ def test_create_review_by_student(
     api_client,
 ) -> None:
     """Test review creation by student."""
-    course = factories.CourseFactory.create()
+    course = factories.CourseFactory.create(
+        status=models.Course.Status.READY,
+    )
     course.students.add(user)
     review = factories.ReviewFactory.build()
     api_client.force_authenticate(user=user)
@@ -39,7 +41,9 @@ def test_create_review_by_not_student(
     api_client,
 ) -> None:
     """Test review creation by not student."""
-    course = factories.CourseFactory.create()
+    course = factories.CourseFactory.create(
+        status=models.Course.Status.READY,
+    )
     review = factories.ReviewFactory.build()
     api_client.force_authenticate(user=user)
     response = api_client.post(
@@ -58,7 +62,9 @@ def test_owner_update_review(
     api_client,
 ) -> None:
     """Test update review by owner."""
-    course = factories.CourseFactory.create()
+    course = factories.CourseFactory.create(
+        status=models.Course.Status.READY,
+    )
     course.students.add(user)
     review = factories.ReviewFactory.create(
         user=user,
@@ -89,7 +95,9 @@ def test_not_owner_update_review(
 ) -> None:
     """Test update review by another user."""
     another_user = UserFactory.create()
-    course = factories.CourseFactory.create()
+    course = factories.CourseFactory.create(
+        status=models.Course.Status.READY,
+    )
     review = factories.ReviewFactory.create(
         user=user,
         course=course,
@@ -112,7 +120,9 @@ def test_owner_remove_review(
     api_client,
 ) -> None:
     """Test remove review by owner."""
-    course = factories.CourseFactory.create()
+    course = factories.CourseFactory.create(
+        status=models.Course.Status.READY,
+    )
     course.students.add(user)
     review = factories.ReviewFactory.create(
         user=user,
@@ -131,7 +141,9 @@ def test_not_owner_remove_review(
 ) -> None:
     """Test remove review by another user."""
     another_user = UserFactory.create()
-    course = factories.CourseFactory.create()
+    course = factories.CourseFactory.create(
+        status=models.Course.Status.READY,
+    )
     review = factories.ReviewFactory.create(
         user=user,
         course=course,

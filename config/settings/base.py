@@ -80,6 +80,7 @@ THIRD_PARTY_APPS = [
     "drf_spectacular",
     "djoser",
     "rest_framework_simplejwt",
+    "rest_framework.authtoken",
     "rest_framework_simplejwt.token_blacklist",
 ]
 
@@ -158,6 +159,11 @@ MEDIA_ROOT = str(ROOT_DIR / "media")
 # https://docs.djangoproject.com/en/dev/ref/settings/#media-url
 MEDIA_URL = "/media/"
 
+STATIC_ROOT = str(ROOT_DIR / "staticfiles")
+# https://docs.djangoproject.com/en/dev/ref/settings/#static-url
+STATIC_URL = "/static/"
+# https://docs.djangoproject.com/en/dev/ref/contrib/staticfiles/#std:setting-STATICFILES_DIRS
+STATICFILES_DIRS = [str(ROOT_DIR / "static")]
 # TEMPLATES
 # ------------------------------------------------------------------------------
 # https://docs.djangoproject.com/en/dev/ref/settings/#templates
@@ -291,17 +297,22 @@ CORS_URLS_REGEX = r"^/api/.*$"
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:8080",
 ]
+DOMAIN = "localhost:8080"
 
 DJOSER = {
     "USER_CREATE_PASSWORD_RETYPE": True,
     "SET_PASSWORD_RETYPE": True,
     "SET_USERNAME_RETYPE": True,
-    "PASSWORD_CHANGED_EMAIL_CONFIRMATION": True,
     "SEND_ACTIVATION_EMAIL": True,
     "SEND_CONFIRMATION_EMAIL": True,
+    "PASSWORD_CHANGED_EMAIL_CONFIRMATION": True,
+    "USERNAME_CHANGED_EMAIL_CONFIRMATION": True,
     "PASSWORD_RESET_CONFIRM_RETYPE": True,
     "PASSWORD_RESET_CONFIRM_URL": "reset/password/confirm/{uid}/{token}",
+    "USERNAME_RESET_CONFIRM_RETYPE": True,
+    "USERNAME_RESET_CONFIRM_URL": "reset/username/confirm/{uid}/{token}",
     "ACTIVATION_URL": "activate/{uid}/{token}",
+    "PASSWORD_RESET_SHOW_EMAIL_NOT_FOUND": True,
     "SERIALIZERS": {
         "user_create": "apps.users.serializers.UserSerializer",  # custom serializer
         "user": "apps.users.serializers.UserSerializer",
@@ -311,7 +322,7 @@ DJOSER = {
 }
 
 SIMPLE_JWT = {
-    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=5),
+    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=10),
     "REFRESH_TOKEN_LIFETIME": timedelta(days=15),
     "ROTATE_REFRESH_TOKENS": True,
     "BLACKLIST_AFTER_ROTATION": True,

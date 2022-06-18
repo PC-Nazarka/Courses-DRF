@@ -7,9 +7,9 @@ from django.utils.translation import gettext_lazy as _
 from apps.core.models import BaseModel
 
 
-def get_directory_path(instance, _) -> str:
+def get_directory_path(instance, filename) -> str:
     """Get directory for save image of course."""
-    return f"course_{instance.name}_{instance.id}"
+    return f"course_{instance.name}_{instance.id}/{filename}"
 
 
 def get_sentinel_user():

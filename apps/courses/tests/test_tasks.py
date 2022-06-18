@@ -14,6 +14,7 @@ def test_create_task(
 ) -> None:
     """Test task creation."""
     course = factories.CourseFactory.create(
+        status=models.Course.Status.READY,
         owner=user,
     )
     topic = factories.TopicFactory.create(
@@ -45,6 +46,7 @@ def test_owner_update_task(
 ) -> None:
     """Test update task by owner."""
     course = factories.CourseFactory.create(
+        status=models.Course.Status.READY,
         owner=user,
     )
     topic = factories.TopicFactory.create(
@@ -80,6 +82,7 @@ def test_not_owner_update_task(
     """Test update task by another user."""
     another_user = UserFactory.create()
     course = factories.CourseFactory.create(
+        status=models.Course.Status.READY,
         owner=user,
     )
     topic = factories.TopicFactory.create(
@@ -108,6 +111,7 @@ def test_owner_remove_task(
 ) -> None:
     """Test remove task by owner."""
     course = factories.CourseFactory.create(
+        status=models.Course.Status.READY,
         owner=user,
     )
     topic = factories.TopicFactory.create(
@@ -130,6 +134,7 @@ def test_not_owner_remove_task(
     """Test remove task by another user."""
     another_user = UserFactory.create()
     course = factories.CourseFactory.create(
+        status=models.Course.Status.READY,
         owner=user,
     )
     topic = factories.TopicFactory.create(

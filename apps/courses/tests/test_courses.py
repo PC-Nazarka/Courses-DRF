@@ -18,7 +18,6 @@ def test_create_course(
         category=category,
         owner=user,
     )
-    print(course.status)
     api_client.force_authenticate(user=user)
     response = api_client.post(
         reverse_lazy("api:course-list"),
@@ -149,7 +148,9 @@ def test_add_and_remove_student(
     api_client,
 ) -> None:
     """Test add and remove student."""
-    course = factories.CourseFactory.create()
+    course = factories.CourseFactory.create(
+        status=models.Course.Status.READY,
+    )
     api_client.force_authenticate(user=user)
     api_client.post(
         reverse_lazy(
@@ -172,7 +173,9 @@ def test_add_and_remove_passing_success(
     api_client,
 ) -> None:
     """Sucess test add and remove passing."""
-    course = factories.CourseFactory.create()
+    course = factories.CourseFactory.create(
+        status=models.Course.Status.READY,
+    )
     api_client.force_authenticate(user=user)
     course.students.add(user)
     api_client.post(
@@ -196,7 +199,9 @@ def test_add_and_remove_passing_failed(
     api_client,
 ) -> None:
     """Failed test add and remove passing."""
-    course = factories.CourseFactory.create()
+    course = factories.CourseFactory.create(
+        status=models.Course.Status.READY,
+    )
     api_client.force_authenticate(user=user)
     response = api_client.post(
         reverse_lazy(
@@ -213,7 +218,9 @@ def test_add_and_remove_interest_success(
     api_client,
 ) -> None:
     """Success test add and remove interest."""
-    course = factories.CourseFactory.create()
+    course = factories.CourseFactory.create(
+        status=models.Course.Status.READY,
+    )
     api_client.force_authenticate(user=user)
     course.students.add(user)
     api_client.post(
@@ -237,7 +244,9 @@ def test_add_and_remove_interest_failed(
     api_client,
 ) -> None:
     """Failed test add and remove interest."""
-    course = factories.CourseFactory.create()
+    course = factories.CourseFactory.create(
+        status=models.Course.Status.READY,
+    )
     api_client.force_authenticate(user=user)
     response = api_client.post(
         reverse_lazy(
@@ -254,7 +263,9 @@ def test_add_and_remove_wanted_passing_success(
     api_client,
 ) -> None:
     """Success test add and remove wanted passing."""
-    course = factories.CourseFactory.create()
+    course = factories.CourseFactory.create(
+        status=models.Course.Status.READY,
+    )
     api_client.force_authenticate(user=user)
     course.students.add(user)
     api_client.post(
@@ -278,7 +289,9 @@ def test_add_and_remove_wanted_passing_failed(
     api_client,
 ) -> None:
     """Failed test add and remove wanted passing."""
-    course = factories.CourseFactory.create()
+    course = factories.CourseFactory.create(
+        status=models.Course.Status.READY,
+    )
     api_client.force_authenticate(user=user)
     response = api_client.post(
         reverse_lazy(
@@ -295,7 +308,9 @@ def test_add_and_remove_achive_success(
     api_client,
 ) -> None:
     """Success test add and remove achive."""
-    course = factories.CourseFactory.create()
+    course = factories.CourseFactory.create(
+        status=models.Course.Status.READY,
+    )
     api_client.force_authenticate(user=user)
     course.students.add(user)
     api_client.post(
@@ -319,7 +334,9 @@ def test_add_and_remove_achive_failed(
     api_client,
 ) -> None:
     """Failed test add and remove achive."""
-    course = factories.CourseFactory.create()
+    course = factories.CourseFactory.create(
+        status=models.Course.Status.READY,
+    )
     api_client.force_authenticate(user=user)
     response = api_client.post(
         reverse_lazy(

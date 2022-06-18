@@ -31,3 +31,4 @@ pre-commit
 factory-boy==3.2.1
 django-extensions==3.1.5
 django-coverage-plugin==2.0.3
+django-debug-toolbar==3.4.0 

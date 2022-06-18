@@ -2,6 +2,7 @@ from django.db.models import Q
 from rest_framework import generics
 from rest_framework import permissions as permis
 from rest_framework import response, status
+from rest_framework.views import APIView
 
 from apps.core import views
 from apps.users.models import User
@@ -51,7 +52,7 @@ class CourseViewSet(views.BaseViewSet):
         return object_list
 
 
-class AddStudentsToCourseView(generics.GenericAPIView):
+class AddStudentsToCourseView(APIView):
     """View for add student to course."""
 
     def post(self, request, *args, **kwargs):
@@ -79,7 +80,7 @@ class AddStudentsToCourseView(generics.GenericAPIView):
         )
 
 
-class AddCourseToPassingView(generics.GenericAPIView):
+class AddCourseToPassingView(APIView):
     """View for course to passing by some user."""
 
     def post(self, request, *args, **kwargs):
@@ -108,7 +109,7 @@ class AddCourseToPassingView(generics.GenericAPIView):
         )
 
 
-class AddCourseToInterestView(generics.GenericAPIView):
+class AddCourseToInterestView(APIView):
     """View for course to interest by some user."""
 
     def post(self, request, *args, **kwargs):
@@ -135,7 +136,7 @@ class AddCourseToInterestView(generics.GenericAPIView):
         )
 
 
-class AddCourseToWantedPassingView(generics.GenericAPIView):
+class AddCourseToWantedPassingView(APIView):
     """View for course to ``wanted passing`` by some user."""
 
     def post(self, request, *args, **kwargs):
@@ -162,7 +163,7 @@ class AddCourseToWantedPassingView(generics.GenericAPIView):
         )
 
 
-class AddCourseToAchiveView(generics.GenericAPIView):
+class AddCourseToAchiveView(APIView):
     """View for course to achive by some user."""
 
     def post(self, request, *args, **kwargs):
@@ -187,48 +188,6 @@ class AddCourseToAchiveView(generics.GenericAPIView):
             },
             status=status.HTTP_404_NOT_FOUND,
         )
-
-
-class FilterCoursesView(generics.ListAPIView):
-    """View for filter courses."""
-
-    def search_queryset(self, object_list):
-        """Filter queryset by search query."""
-        query_search = self.request.GET.get("search")
-        if query_search:
-            return object_list.filter(
-                Q(name__icontains=query_search)
-                | Q(description__icontains=query_search),
-            )
-        return query_search
-
-    def filter_queryset(self, object_list):
-        """Filter queryset by filter query."""
-        query_filter = self.request.GET.get("price")
-        print(query_filter)
-        if query_filter:
-            return object_list.filter(price=query_filter)
-        return object_list
-
-    def category_queryset(self, object_list):
-        """Filter queryset by cateofry query."""
-        query_category = self.request.GET.get("category")
-        if query_category:
-            return object_list.filter(
-                category__id=models.Category.objects.get(
-                    pk=int(query_category),
-                ),
-            )
-        return object_list
-
-    def get_queryset(self):
-        """Get search result."""
-        object_list = models.Course.objects.all()
-        print(object_list)
-        object_list = self.get_search_queryset(object_list)
-        object_list = self.get_filter_queryset(object_list)
-        object_list = self.get_category_queryset(object_list)
-        return object_list
 
 
 class TopicViewSet(views.SimpleBaseViewSet):

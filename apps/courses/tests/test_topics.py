@@ -14,6 +14,7 @@ def test_create_topic(
 ) -> None:
     """Test topic creation."""
     course = factories.CourseFactory.create(
+        status=models.Course.Status.READY,
         owner=user,
     )
     topic = factories.TopicFactory.build()
@@ -40,6 +41,7 @@ def test_owner_update_topic(
 ) -> None:
     """Test update topic by owner."""
     course = factories.CourseFactory.create(
+        status=models.Course.Status.READY,
         owner=user,
     )
     topic = factories.TopicFactory.create(
@@ -70,6 +72,7 @@ def test_not_owner_update_topic(
     """Test update topic by another user."""
     another_user = UserFactory.create()
     course = factories.CourseFactory.create(
+        status=models.Course.Status.READY,
         owner=user,
     )
     topic = factories.TopicFactory.create(
@@ -94,6 +97,7 @@ def test_owner_remove_topic(
 ) -> None:
     """Test remove topic by owner."""
     course = factories.CourseFactory.create(
+        status=models.Course.Status.READY,
         owner=user,
     )
     topic = factories.TopicFactory.create(
@@ -113,6 +117,7 @@ def test_not_owner_remove_topic(
     """Test remove topic by another user."""
     another_user = UserFactory.create()
     course = factories.CourseFactory.create(
+        status=models.Course.Status.READY,
         owner=user,
     )
     topic = factories.TopicFactory.create(

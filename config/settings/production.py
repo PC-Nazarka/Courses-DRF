@@ -101,7 +101,6 @@ INSTALLED_APPS += ["anymail"]  # noqa F405
 
 ANYMAIL = {}
 
-
 # LOGGING
 # ------------------------------------------------------------------------------
 # https://docs.djangoproject.com/en/dev/ref/settings/#logging

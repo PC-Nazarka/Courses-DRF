@@ -40,7 +40,10 @@ def init(context):
     django.migrate(context)
     django.set_default_site(context)
     tests.pytest(context)
-    django.createsuperuser(context)
+    try:
+        django.createsuperuser(context)
+    except Exception:
+        pass
     try:
         common.success("Generate sample data")
         fill_sample_data(context)
