@@ -10,11 +10,6 @@ urlpatterns = [
         name="add-students",
     ),
     path(
-        "courses/<int:pk>/add-passing/",
-        views.AddCourseToPassingView.as_view(),
-        name="add-passing",
-    ),
-    path(
         "courses/<int:pk>/add-interest/",
         views.AddCourseToInterestView.as_view(),
         name="add-interest",

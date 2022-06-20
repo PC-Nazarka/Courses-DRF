@@ -19,7 +19,6 @@ class UserSerializer(serializers.ModelSerializer):
             "date_joined",
             "description",
             "courses_student",
-            "pass_courses",
             "favorite_courses",
             "want_pass_courses",
             "archive_courses",

@@ -61,11 +61,6 @@ class Course(BaseModel):
         verbose_name=_("One of students"),
         related_name="courses_student",
     )
-    passers_users = models.ManyToManyField(
-        "users.User",
-        verbose_name=_("Passes users"),
-        related_name="pass_courses",
-    )
     interest_users = models.ManyToManyField(
         "users.User",
         verbose_name=_("Users mean, that this course is interesting"),

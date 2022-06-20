@@ -168,52 +168,7 @@ def test_add_and_remove_student(
     assert user not in course.students.all()
 
 
-def test_add_and_remove_passing_success(
-    user,
-    api_client,
-) -> None:
-    """Sucess test add and remove passing."""
-    course = factories.CourseFactory.create(
-        status=models.Course.Status.READY,
-    )
-    api_client.force_authenticate(user=user)
-    course.students.add(user)
-    api_client.post(
-        reverse_lazy(
-            "courses:add-passing",
-            kwargs={"pk": course.pk},
-        )
-    )
-    assert user in course.passers_users.all()
-    api_client.post(
-        reverse_lazy(
-            "courses:add-passing",
-            kwargs={"pk": course.pk},
-        )
-    )
-    assert user not in course.passers_users.all()
-
-
-def test_add_and_remove_passing_failed(
-    user,
-    api_client,
-) -> None:
-    """Failed test add and remove passing."""
-    course = factories.CourseFactory.create(
-        status=models.Course.Status.READY,
-    )
-    api_client.force_authenticate(user=user)
-    response = api_client.post(
-        reverse_lazy(
-            "courses:add-passing",
-            kwargs={"pk": course.pk},
-        )
-    )
-    assert user not in course.passers_users.all()
-    assert response.status_code == status.HTTP_404_NOT_FOUND
-
-
-def test_add_and_remove_interest_success(
+def test_add_and_remove_interest(
     user,
     api_client,
 ) -> None:
@@ -237,25 +192,6 @@ def test_add_and_remove_interest_success(
         )
     )
     assert user not in course.interest_users.all()
-
-
-def test_add_and_remove_interest_failed(
-    user,
-    api_client,
-) -> None:
-    """Failed test add and remove interest."""
-    course = factories.CourseFactory.create(
-        status=models.Course.Status.READY,
-    )
-    api_client.force_authenticate(user=user)
-    response = api_client.post(
-        reverse_lazy(
-            "courses:add-interest",
-            kwargs={"pk": course.pk},
-        )
-    )
-    assert user not in course.interest_users.all()
-    assert response.status_code == status.HTTP_404_NOT_FOUND
 
 
 def test_add_and_remove_wanted_passing_success(

@@ -63,10 +63,6 @@ class AddStudentsToCourseView(APIView):
         if user in course.students.all():
             course.students.remove(user)
             message = "remove"
-            if user in course.passers_users.all():
-                course.passers_users.remove(user)
-            if user in course.interest_users.all():
-                course.interest_users.remove(user)
             if user in course.want_pass_users.all():
                 course.want_pass_users.remove(user)
             if user in course.archive_users.all():
@@ -80,35 +76,6 @@ class AddStudentsToCourseView(APIView):
         )
 
 
-class AddCourseToPassingView(APIView):
-    """View for course to passing by some user."""
-
-    def post(self, request, *args, **kwargs):
-        """Handler POST request."""
-        course = models.Course.objects.get(pk=self.kwargs["pk"])
-        user = User.objects.get(pk=self.request.user.pk)
-        if user in course.students.all():
-            message = ""
-            if user in course.passers_users.all():
-                course.passers_users.remove(user)
-                message = "remove"
-            else:
-                course.passers_users.add(user)
-                message = "add"
-            return response.Response(
-                data={
-                    "message": f"Success {message} course to passing",
-                },
-                status=status.HTTP_200_OK,
-            )
-        return response.Response(
-            data={
-                "message": "User is not in students of course",
-            },
-            status=status.HTTP_404_NOT_FOUND,
-        )
-
-
 class AddCourseToInterestView(APIView):
     """View for course to interest by some user."""
 
@@ -116,23 +83,16 @@ class AddCourseToInterestView(APIView):
         """Handler POST request."""
         course = models.Course.objects.get(pk=self.kwargs["pk"])
         user = User.objects.get(pk=self.request.user.pk)
-        if user in course.students.all():
-            message = ""
-            if user in course.interest_users.all():
-                course.interest_users.remove(user)
-                message = "remove"
-            else:
-                course.interest_users.add(user)
-                message = "add"
-            return response.Response(
-                data={"message": f"Success {message} course to interest"},
-                status=status.HTTP_200_OK,
-            )
+        message = ""
+        if user in course.interest_users.all():
+            course.interest_users.remove(user)
+            message = "remove"
+        else:
+            course.interest_users.add(user)
+            message = "add"
         return response.Response(
-            data={
-                "message": "User is not in students of course",
-            },
-            status=status.HTTP_404_NOT_FOUND,
+            data={"message": f"Success {message} course to interest"},
+            status=status.HTTP_200_OK,
         )
 
 
