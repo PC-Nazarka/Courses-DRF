@@ -72,14 +72,13 @@ def test_owner_update_review(
     )
     new_name = "My review"
     api_client.force_authenticate(user=user)
-    response = api_client.put(
+    response = api_client.patch(
         reverse_lazy("api:review-detail", kwargs={"pk": review.pk}),
         data={
             "review": new_name,
-            "rating": review.rating,
-            "course": course.id,
         },
     )
+    print(response.__dict__)
     assert response.status_code == status.HTTP_200_OK
     assert models.Review.objects.filter(
         review=new_name,

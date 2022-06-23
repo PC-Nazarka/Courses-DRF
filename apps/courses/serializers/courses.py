@@ -1,9 +1,9 @@
-from rest_framework import serializers
+from apps.core.serializers import BaseSerializer, serializers
 
 from .. import models
 
 
-class CategorySerializer(serializers.ModelSerializer):
+class CategorySerializer(BaseSerializer):
     """Serializer for representing `Category`."""
 
     class Meta:
@@ -14,7 +14,7 @@ class CategorySerializer(serializers.ModelSerializer):
         )
 
 
-class CourseSerializer(serializers.ModelSerializer):
+class CourseSerializer(BaseSerializer):
     """Serializer for representing `Course`."""
 
     students = serializers.PrimaryKeyRelatedField(
@@ -81,7 +81,7 @@ class CourseSerializer(serializers.ModelSerializer):
         )
 
 
-class TopicSerializer(serializers.ModelSerializer):
+class TopicSerializer(BaseSerializer):
     """Serializer for representing `Topic`."""
 
     course = serializers.PrimaryKeyRelatedField(
@@ -103,7 +103,7 @@ class TopicSerializer(serializers.ModelSerializer):
         )
 
 
-class TaskSerializer(serializers.ModelSerializer):
+class TaskSerializer(BaseSerializer):
     """Serializer for representing `Task`."""
 
     topic = serializers.PrimaryKeyRelatedField(
@@ -131,7 +131,7 @@ class TaskSerializer(serializers.ModelSerializer):
         )
 
 
-class AnswerSerializer(serializers.ModelSerializer):
+class AnswerSerializer(BaseSerializer):
     """Serializer for representing `Answer`."""
 
     task = serializers.PrimaryKeyRelatedField(
@@ -148,7 +148,7 @@ class AnswerSerializer(serializers.ModelSerializer):
         )
 
 
-class CommentSerializer(serializers.ModelSerializer):
+class CommentSerializer(BaseSerializer):
     """Serializer for representing `Comment`."""
 
     task = serializers.PrimaryKeyRelatedField(
