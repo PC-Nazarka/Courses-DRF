@@ -4,6 +4,7 @@ from django.dispatch import receiver
 from . import models, tasks
 
 STUDENTS_COUNT = (100, 1000)
+PATH_DEFAULT_IMAGE = "default/example.jpg"
 
 
 @receiver(m2m_changed, sender=models.Course.students.through)
@@ -39,4 +40,5 @@ def check_status_of_course(instance, created, update_fields, **kwargs):
 @receiver(post_delete, sender=models.Course)
 def delete_img_of_course_after_delete(instance, **kwargs):
     """Signal when course has deleted."""
-    instance.image.storage.delete(instance.image.path)
+    if not str(instance.image).endswith(PATH_DEFAULT_IMAGE):
+        instance.image.storage.delete(instance.image.path)

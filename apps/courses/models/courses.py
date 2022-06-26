@@ -45,6 +45,7 @@ class Course(BaseModel):
         verbose_name=_("Description of course"),
     )
     image = models.ImageField(
+        default="default/example.jpg",
         upload_to=get_directory_path,
         verbose_name=_("Image of course"),
         blank=True,

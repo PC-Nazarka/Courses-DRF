@@ -267,7 +267,7 @@ Session.vim
 tags
 
 ### Project template
-media/
+media/course_*
 
 .pytest_cache/
 .ipython/
