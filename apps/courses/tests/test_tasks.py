@@ -29,6 +29,7 @@ def test_create_task(
             "title": task.title,
             "text": task.text,
             "topic": topic.id,
+            "number": task.number,
         },
     )
     assert response.status_code == status.HTTP_201_CREATED
@@ -37,6 +38,7 @@ def test_create_task(
         title=task.title,
         text=task.text,
         topic=topic.id,
+        number=task.number,
     ).exists()
 
 
@@ -64,6 +66,7 @@ def test_owner_update_task(
             "title": new_name,
             "text": task.text,
             "topic": topic.id,
+            "number": task.number,
         },
     )
     assert response.status_code == status.HTTP_200_OK
@@ -72,6 +75,7 @@ def test_owner_update_task(
         title=new_name,
         text=task.text,
         topic=topic.id,
+        number=task.number,
     ).exists()
 
 

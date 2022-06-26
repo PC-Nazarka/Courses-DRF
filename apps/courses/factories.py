@@ -77,6 +77,9 @@ class TaskFactory(factory.django.DjangoModelFactory):
     title = factory.Faker(
         "currency_name",
     )
+    number = factory.Faker(
+        "pyint",
+    )
     text = factory.Faker(
         "catch_phrase",
     )

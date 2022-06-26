@@ -128,6 +128,7 @@ class TaskSerializer(BaseSerializer):
             "topic",
             "answers",
             "comments",
+            "number",
         )
 
 

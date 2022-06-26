@@ -204,6 +204,7 @@ class CategoryListAPIView(generics.ListAPIView):
     serializer_class = serializers.CategorySerializer
     queryset = models.Category.objects.all()
     permission_classes = (permis.AllowAny,)
+    pagination_class = None
 
 
 class CategoryAPIView(generics.RetrieveAPIView):

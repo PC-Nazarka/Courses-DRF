@@ -167,6 +167,9 @@ class Task(BaseModel):
     text = models.TextField(
         verbose_name=_("Text or description"),
     )
+    number = models.IntegerField(
+        verbose_name=_("Number task in topic"),
+    )
     topic = models.ForeignKey(
         Topic,
         on_delete=models.CASCADE,
