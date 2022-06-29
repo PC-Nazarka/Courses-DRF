@@ -15,7 +15,7 @@ class CourseViewSet(views.BaseViewSet):
 
     serializer_class = serializers.CourseSerializer
     queryset = models.Course.objects.filter(status=models.Course.Status.READY)
-    permission_classes = (permissions.IsCreatorOrStudent,)
+    permission_classes = (permissions.IsStudent | permissions.IsOwner,)
 
     def get_object(self) -> models.Course:
         """Overriden for get object, because some object hasn't status `READY`."""
@@ -155,7 +155,7 @@ class TopicViewSet(views.SimpleBaseViewSet):
 
     serializer_class = serializers.TopicSerializer
     queryset = models.Topic.objects.all()
-    permission_classes = (permissions.IsCreatorOrStudent,)
+    permission_classes = (permissions.IsStudent | permissions.IsOwner,)
 
 
 class TaskViewSet(views.SimpleBaseViewSet):
@@ -163,7 +163,7 @@ class TaskViewSet(views.SimpleBaseViewSet):
 
     serializer_class = serializers.TaskSerializer
     queryset = models.Task.objects.all()
-    permission_classes = (permissions.IsCreatorOrStudent,)
+    permission_classes = (permissions.IsStudent | permissions.IsOwner,)
 
 
 class AnswerViewSet(views.SimpleBaseViewSet):
@@ -171,7 +171,7 @@ class AnswerViewSet(views.SimpleBaseViewSet):
 
     serializer_class = serializers.AnswerSerializer
     queryset = models.Answer.objects.all()
-    permission_classes = (permissions.IsCreatorOrStudent,)
+    permission_classes = (permissions.IsStudent | permissions.IsOwner,)
 
 
 class CommentViewSet(views.SimpleBaseViewSet):
@@ -179,7 +179,7 @@ class CommentViewSet(views.SimpleBaseViewSet):
 
     serializer_class = serializers.CommentSerializer
     queryset = models.Comment.objects.all()
-    permission_classes = (permissions.IsCreatorOrStudent,)
+    permission_classes = (permissions.IsStudent | permissions.IsOwner,)
 
     def perform_create(self, serializer) -> None:
         """Overriden for create instanse and get User instanse from request."""
@@ -191,11 +191,36 @@ class ReviewViewSet(views.SimpleBaseViewSet):
 
     serializer_class = serializers.ReviewSerializer
     queryset = models.Review.objects.all()
-    permission_classes = (permissions.IsCreatorOrStudent,)
+    permission_classes = (permissions.IsStudent | permissions.IsOwner,)
 
     def perform_create(self, serializer) -> None:
         """Overriden for create instanse and get User instanse from request."""
         serializer.save(user=self.request.user)
+
+
+class AnswerByUserViewSet(views.CRUBaseViewSet):
+    """ViewSet for AnswerByUser model."""
+
+    serializer_class = serializers.AnswerByUserSerializer
+    queryset = models.AnswerByUser.objects.all()
+    permission_classes = (permissions.IsStudent | permissions.IsOwner,)
+
+    def perform_create(self, serializer) -> None:
+        """Overriden for create instanse and get User instanse from request."""
+        serializer.save(user=self.request.user)
+
+    def get_object(self):
+        """Overriden for get need instanse."""
+        answers = models.AnswerByUser.objects.filter(
+            user=self.request.user,
+            task=models.Task.objects.get(id=self.kwargs["pk"]),
+        )
+        if answers:
+            return answers.first()
+        return models.AnswerByUser.objects.create(
+            user=self.request.user,
+            task=models.Task.objects.get(id=self.kwargs["pk"]),
+        )
 
 
 class CategoryListAPIView(generics.ListAPIView):

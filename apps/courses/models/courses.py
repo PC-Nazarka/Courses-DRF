@@ -247,3 +247,28 @@ class Comment(BaseModel):
     class Meta:
         verbose_name_plural = _("Comments")
         verbose_name = _("Comment")
+
+
+class AnswerByUser(BaseModel):
+    """Model for answer by user."""
+
+    user = models.ForeignKey(
+        "users.User",
+        on_delete=models.CASCADE,
+        verbose_name=_("User"),
+    )
+    task = models.ForeignKey(
+        Task,
+        on_delete=models.CASCADE,
+        verbose_name=_("Task for answer"),
+    )
+    answer = models.BooleanField(
+        verbose_name=_("Answer by user"),
+        blank=True,
+        null=True,
+        default=None,
+    )
+
+    class Meta:
+        verbose_name_plural = _("Answers By User")
+        verbose_name = _("Answer By User")

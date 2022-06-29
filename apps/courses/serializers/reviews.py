@@ -18,7 +18,7 @@ class ReviewSerializer(BaseSerializer):
         other_reviews = models.Review.objects.filter(course_id=data.id).filter(
             user_id=self._user.id
         )
-        if other_reviews:
+        if other_reviews and self._request.method == "POST":
             raise serializers.ValidationError(
                 "You can't create more one review for course",
             )
@@ -41,4 +41,5 @@ class ReviewSerializer(BaseSerializer):
             "user",
             "course",
             "created",
+            "modified",
         )

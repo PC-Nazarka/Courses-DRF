@@ -1,6 +1,5 @@
-from django.contrib.auth import get_user_model
-
 from apps.core.services import send_email
+from apps.users.models import User
 from config.celery_app import app
 
 from .models import Course
@@ -15,6 +14,6 @@ def send_email_about_course(
     """Send email to creator with some attendance of course."""
     send_email(
         mode,
-        get_user_model().objects.get(pk=user_id),
+        User.objects.get(pk=user_id),
         Course.objects.get(pk=course_id),
     )

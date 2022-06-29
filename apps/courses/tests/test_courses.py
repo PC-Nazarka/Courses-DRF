@@ -3,7 +3,6 @@ from django.urls import reverse_lazy
 from rest_framework import status
 
 from apps.courses import factories, models
-from apps.users.factories import UserFactory
 
 pytestmark = pytest.mark.django_db
 
@@ -82,13 +81,11 @@ def test_not_owner_update_course(
     api_client,
 ) -> None:
     """Test update course by another user."""
-    another_user = UserFactory.create()
     category = factories.CategoryFactory.create()
     course = factories.CourseFactory.create(
-        owner=user,
         category=category,
     )
-    api_client.force_authenticate(user=another_user)
+    api_client.force_authenticate(user=user)
     new_name = "My course"
     response = api_client.put(
         reverse_lazy(
@@ -129,11 +126,8 @@ def test_not_owner_remove_course(
     api_client,
 ) -> None:
     """Test remove course by another user."""
-    another_user = UserFactory.create()
-    course = factories.CourseFactory.create(
-        owner=user,
-    )
-    api_client.force_authenticate(user=another_user)
+    course = factories.CourseFactory.create()
+    api_client.force_authenticate(user=user)
     response = api_client.delete(
         reverse_lazy(
             "api:course-detail",
@@ -282,3 +276,75 @@ def test_add_and_remove_achive_failed(
     )
     assert user not in course.archive_users.all()
     assert response.status_code == status.HTTP_404_NOT_FOUND
+
+
+def test_not_student_read_course(
+    user,
+    api_client,
+) -> None:
+    """Test read course by not student."""
+    course = factories.CourseFactory.create(
+        status=models.Course.Status.READY,
+    )
+    api_client.force_authenticate(user=user)
+    response = api_client.get(
+        reverse_lazy(
+            "api:course-detail",
+            kwargs={"pk": course.pk},
+        )
+    )
+    assert response.status_code == status.HTTP_200_OK
+
+
+def test_student_read_course(
+    user,
+    api_client,
+) -> None:
+    """Test read course by student."""
+    course = factories.CourseFactory.create(
+        status=models.Course.Status.READY,
+    )
+    course.students.add(user)
+    api_client.force_authenticate(user=user)
+    response = api_client.get(
+        reverse_lazy(
+            "api:course-detail",
+            kwargs={"pk": course.pk},
+        )
+    )
+    assert response.status_code == status.HTTP_200_OK
+
+
+def test_not_auth_read_course(
+    api_client,
+) -> None:
+    """Test read course by not auth."""
+    course = factories.CourseFactory.create(
+        status=models.Course.Status.READY,
+    )
+    response = api_client.get(
+        reverse_lazy(
+            "api:course-detail",
+            kwargs={"pk": course.pk},
+        )
+    )
+    assert response.status_code == status.HTTP_200_OK
+
+
+def test_owner_read_course(
+    user,
+    api_client,
+) -> None:
+    """Test read course by owner."""
+    course = factories.CourseFactory.create(
+        status=models.Course.Status.READY,
+        owner=user,
+    )
+    api_client.force_authenticate(user=user)
+    response = api_client.get(
+        reverse_lazy(
+            "api:course-detail",
+            kwargs={"pk": course.pk},
+        )
+    )
+    assert response.status_code == status.HTTP_200_OK

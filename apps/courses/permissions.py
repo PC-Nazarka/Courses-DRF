@@ -32,91 +32,192 @@ def get_course_instanse(data: dict) -> models.Course:
             models.Review.objects.get(pk=data["review"]),
         ).data
         return get_course_instanse(review_json)
+    if "answer-by-user" in data:
+        answer_by_user = serializers.AnswerByUserSerializer(
+            models.AnswerByUser.objects.get(pk=data["answer-by-user"]),
+        ).data
+        return get_course_instanse(answer_by_user)
 
 
-class IsCreatorOrStudent(permissions.BasePermission):
-    """Custom permission for let change object by creator or student."""
+def get_view(view):
+    return "task" if view.basename == "answer-by-user" else view.basename
+
+
+class IsStudent(permissions.BasePermission):
+    """Custom permission for let change object by student of course."""
 
     def has_permission(self, request, view) -> bool:
-        """Overriden for differentiate simple user and creator.
-
-        Student of course can read all model, but create can only comment and
-        review.
-        Creator can create all and read all.
-        """
-        if view.basename in ("course", "topic", "task", "answer"):
-            if request.method == "GET":
-                if all(
-                    [
-                        "pk" not in request.parser_context["kwargs"],
-                        view.basename == "course",
-                    ]
-                ):
+        """Overriden for different student of course and simple user."""
+        match view.basename:
+            case "course":
+                if request.method in ("GET", "POST"):
                     return True
-
-            if request.method == "POST":
-                if view.basename in ("topic", "task", "answer"):
-                    course = get_course_instanse(request.data)
-                    return request.user.id == course.owner.id
+                if request.method in ("DELETE", "PUT", "PATCH"):
+                    return False
+            case "topic":
+                if request.method in ("POST", "DELETE", "PUT", "PATCH"):
+                    return False
                 return True
-
-            data = {view.basename: request.parser_context["kwargs"]["pk"]}
-            course = get_course_instanse(data)
-            if request.method == "GET":
-                if view.basename in ("course", "topic"):
-                    return any(
+            case "task" | "answer":
+                if bool(request.user and request.user.is_authenticated):
+                    if request.method in ("POST", "DELETE", "PUT", "PATCH"):
+                        return False
+                    data = {view.basename: request.parser_context["kwargs"]["pk"]}
+                    course = get_course_instanse(data)
+                    return all(
                         [
-                            course.owner.id == request.user.id,
+                            request.user in course.students.all(),
                             course.status == models.Course.Status.READY,
-                            all(
-                                [
-                                    course.status == models.Course.Status.READY,
-                                    request.user in course.students.all(),
-                                ]
-                            ),
-                        ]
+                        ],
                     )
-                return any(
-                    [
-                        request.user.id == course.owner.id,
-                        all(
-                            [
-                                course.status == models.Course.Status.READY,
-                                request.user in course.students.all(),
-                            ]
-                        ),
-                    ]
-                )
-
-            if request.method in ("PUT", "PATCH", "DELETE"):
-                return request.user.id == course.owner.id
-
-        if view.basename in ("comment", "review"):
-            if request.method == "POST":
-                course = get_course_instanse(request.data)
-                return any(
-                    [
-                        request.user.id == course.owner.id,
-                        all(
+            case "comment":
+                if bool(request.user and request.user.is_authenticated):
+                    if request.method in ("GET", "POST"):
+                        data = (
+                            request.data
+                            if request.method == "POST"
+                            else {view.basename: request.parser_context["kwargs"]["pk"]}
+                        )
+                        course = get_course_instanse(data)
+                        return all(
                             [
                                 request.user in course.students.all(),
                                 course.status == models.Course.Status.READY,
-                            ]
-                        ),
-                    ]
-                )
-
-            data = {view.basename: request.parser_context["kwargs"]["pk"]}
-            course = get_course_instanse(data)
-            if request.method in ("PUT", "PATCH", "DELETE", "GET"):
-                return any(
-                    [
-                        request.user.id == course.owner.id,
-                        all(
+                            ],
+                        )
+                    if request.method in ("DELETE", "PUT", "PATCH"):
+                        comment = models.Comment.objects.get(
+                            id=request.parser_context["kwargs"]["pk"]
+                        )
+                        data = {view.basename: request.parser_context["kwargs"]["pk"]}
+                        course = get_course_instanse(data)
+                        return all(
                             [
                                 request.user in course.students.all(),
                                 course.status == models.Course.Status.READY,
-                            ]
-                        ),
-                    ]
-                )
+                                comment.user == request.user,
+                            ],
+                        )
+            case "review":
+                if request.method == "GET":
+                    return True
+                if request.method == "POST":
+                    course = get_course_instanse(request.data)
+                    return all(
+                        [
+                            request.user in course.students.all(),
+                            course.status == models.Course.Status.READY,
+                        ],
+                    )
+                if request.method in ("DELETE", "PUT", "PATCH"):
+                    review = models.Review.objects.get(
+                        id=request.parser_context["kwargs"]["pk"],
+                    )
+                    data = {view.basename: request.parser_context["kwargs"]["pk"]}
+                    course = get_course_instanse(data)
+                    return all(
+                        [
+                            request.user in course.students.all(),
+                            course.status == models.Course.Status.READY,
+                            review.user == request.user,
+                        ],
+                    )
+            case "answer-by-user":
+                if bool(request.user and request.user.is_authenticated):
+                    data = (
+                        request.data
+                        if request.method == "POST"
+                        else {get_view(view): request.parser_context["kwargs"]["pk"]}
+                    )
+                    course = get_course_instanse(data)
+                    return all(
+                        [
+                            request.user in course.students.all(),
+                            course.status == models.Course.Status.READY,
+                        ],
+                    )
+
+
+class IsOwner(permissions.BasePermission):
+    """Custom permission for let change object by owner of course."""
+
+    def has_permission(self, request, view) -> bool:
+        """Overriden for different owner of course and simple user."""
+        match view.basename:
+            case "course":
+                if request.method in ("GET", "POST"):
+                    return True
+                if request.method in ("DELETE", "PUT", "PATCH"):
+                    data = {get_view(view): request.parser_context["kwargs"]["pk"]}
+                    course = get_course_instanse(data)
+                    return course.owner == request.user
+            case "topic":
+                if request.method in ("POST", "DELETE", "PUT", "PATCH"):
+                    data = (
+                        request.data
+                        if request.method == "POST"
+                        else {get_view(view): request.parser_context["kwargs"]["pk"]}
+                    )
+                    course = get_course_instanse(data)
+                    return course.owner == request.user
+                return True
+            case "task" | "answer":
+                if bool(request.user and request.user.is_authenticated):
+                    data = (
+                        request.data
+                        if request.method == "POST"
+                        else {get_view(view): request.parser_context["kwargs"]["pk"]}
+                    )
+                    course = get_course_instanse(data)
+                    return course.owner == request.user
+            case "comment":
+                if bool(request.user and request.user.is_authenticated):
+                    if request.method in ("GET", "POST"):
+                        data = (
+                            request.data
+                            if request.method == "POST"
+                            else {
+                                get_view(view): request.parser_context["kwargs"]["pk"]
+                            }
+                        )
+                        course = get_course_instanse(data)
+                        return course.owner == request.user
+                    if request.method in ("DELETE", "PUT", "PATCH"):
+                        comment = models.Comment.objects.get(
+                            id=request.parser_context["kwargs"]["pk"]
+                        )
+                        data = {get_view(view): request.parser_context["kwargs"]["pk"]}
+                        course = get_course_instanse(data)
+                        return course.owner == request.user == comment.user
+            case "review":
+                if request.method == "GET":
+                    return True
+                if request.method == "POST":
+                    course = get_course_instanse(request.data)
+                    return course.owner == request.user
+                if request.method in ("DELETE", "PUT", "PATCH"):
+                    review = models.Review.objects.get(
+                        id=request.parser_context["kwargs"]["pk"],
+                    )
+                    data = {get_view(view): request.parser_context["kwargs"]["pk"]}
+                    course = get_course_instanse(data)
+                    return review.user == request.user == course.owner
+            case "answer-by-user":
+                if bool(request.user and request.user.is_authenticated):
+                    if request.method in ("GET", "POST"):
+                        data = (
+                            request.data
+                            if request.method == "POST"
+                            else {
+                                get_view(view): request.parser_context["kwargs"]["pk"]
+                            }
+                        )
+                        course = get_course_instanse(data)
+                        return course.owner == request.user
+                    if request.method in ("DELETE", "PUT", "PATCH"):
+                        answer = models.AnswerByUser.objects.get(
+                            task_id=request.parser_context["kwargs"]["pk"]
+                        )
+                        data = {get_view(view): request.parser_context["kwargs"]["pk"]}
+                        course = get_course_instanse(data)
+                        return course.owner == request.user == answer.user

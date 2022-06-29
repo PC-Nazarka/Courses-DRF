@@ -125,6 +125,23 @@ class CommentFactory(factory.django.DjangoModelFactory):
         model = models.Comment
 
 
+class AnswerByUserFactory(factory.django.DjangoModelFactory):
+    """Factory for generates test AnswerByUser instanse."""
+
+    user = factory.SubFactory(
+        UserFactory,
+    )
+    task = factory.SubFactory(
+        TaskFactory,
+    )
+    answer = factory.Faker(
+        "pybool",
+    )
+
+    class Meta:
+        model = models.AnswerByUser
+
+
 class ReviewFactory(factory.django.DjangoModelFactory):
     """Factory for generates test Review instanse."""
 

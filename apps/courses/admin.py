@@ -11,7 +11,10 @@ class CourseAdmin(admin.ModelAdmin):
         "students",
         "category",
     )
-    search_fields = ("name",)
+    search_fields = (
+        "name",
+        "description",
+    )
     list_display = (
         "id",
         "name",
@@ -111,6 +114,24 @@ class ReviewAdmin(admin.ModelAdmin):
         "id",
         "rating",
         "review",
+        "created",
+        "modified",
+    )
+
+
+@admin.register(models.AnswerByUser)
+class AnswerByUserAdmin(admin.ModelAdmin):
+    """Class representation of AnswerByUser model in admin panel."""
+
+    autocomplete_fields = (
+        "user",
+        "task",
+    )
+    list_display = (
+        "id",
+        "user",
+        "task",
+        "answer",
         "created",
         "modified",
     )

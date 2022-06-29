@@ -3,7 +3,6 @@ from django.urls import reverse_lazy
 from rest_framework import status
 
 from apps.courses import factories, models
-from apps.users.factories import UserFactory
 
 pytestmark = pytest.mark.django_db
 
@@ -85,10 +84,8 @@ def test_not_owner_update_answer(
     api_client,
 ) -> None:
     """Test update answer by another user."""
-    another_user = UserFactory.create()
     course = factories.CourseFactory.create(
         status=models.Course.Status.READY,
-        owner=user,
     )
     topic = factories.TopicFactory.create(
         course=course,
@@ -99,7 +96,7 @@ def test_not_owner_update_answer(
     answer = factories.AnswerFactory.create(
         task=task,
     )
-    api_client.force_authenticate(user=another_user)
+    api_client.force_authenticate(user=user)
     new_content = "My answer"
     response = api_client.put(
         reverse_lazy(
@@ -139,11 +136,6 @@ def test_owner_remove_answer(
             "api:answer-detail",
             kwargs={"pk": answer.pk},
         ),
-        data={
-            "is_true": answer.is_true,
-            "content": answer.content,
-            "task": answer.task.id,
-        },
     )
     assert answer not in models.Answer.objects.all()
 
@@ -153,7 +145,113 @@ def test_not_owner_remove_answer(
     api_client,
 ) -> None:
     """Test remove answer by another user."""
-    another_user = UserFactory.create()
+    course = factories.CourseFactory.create(
+        status=models.Course.Status.READY,
+    )
+    topic = factories.TopicFactory.create(
+        course=course,
+    )
+    task = factories.TaskFactory.create(
+        topic=topic,
+    )
+    answer = factories.AnswerFactory.create(
+        task=task,
+    )
+    api_client.force_authenticate(user=user)
+    response = api_client.delete(
+        reverse_lazy(
+            "api:answer-detail",
+            kwargs={"pk": answer.pk},
+        ),
+    )
+    assert response.status_code == status.HTTP_403_FORBIDDEN
+
+
+def test_not_student_read_answer(
+    user,
+    api_client,
+) -> None:
+    """Test read answer by not student."""
+    course = factories.CourseFactory.create(
+        status=models.Course.Status.READY,
+    )
+    topic = factories.TopicFactory.create(
+        course=course,
+    )
+    task = factories.TaskFactory.create(
+        topic=topic,
+    )
+    answer = factories.AnswerFactory.create(
+        task=task,
+    )
+    api_client.force_authenticate(user=user)
+    response = api_client.get(
+        reverse_lazy(
+            "api:answer-detail",
+            kwargs={"pk": answer.pk},
+        ),
+    )
+    assert response.status_code == status.HTTP_403_FORBIDDEN
+
+
+def test_student_read_answer(
+    user,
+    api_client,
+) -> None:
+    """Test read answer by student."""
+    course = factories.CourseFactory.create(
+        status=models.Course.Status.READY,
+    )
+    topic = factories.TopicFactory.create(
+        course=course,
+    )
+    task = factories.TaskFactory.create(
+        topic=topic,
+    )
+    answer = factories.AnswerFactory.create(
+        task=task,
+    )
+    course.students.add(user)
+    api_client.force_authenticate(user=user)
+    response = api_client.get(
+        reverse_lazy(
+            "api:answer-detail",
+            kwargs={"pk": answer.pk},
+        ),
+    )
+    assert response.status_code == status.HTTP_200_OK
+
+
+def test_not_auth_read_answer(
+    api_client,
+) -> None:
+    """Test read answer by not auth user."""
+    course = factories.CourseFactory.create(
+        status=models.Course.Status.READY,
+    )
+    topic = factories.TopicFactory.create(
+        course=course,
+    )
+    task = factories.TaskFactory.create(
+        topic=topic,
+    )
+    answer = factories.AnswerFactory.create(
+        task=task,
+    )
+    response = api_client.get(
+        reverse_lazy(
+            "api:answer-detail",
+            kwargs={"pk": answer.pk},
+        ),
+    )
+    assert response.status_code == status.HTTP_401_UNAUTHORIZED
+
+
+def test_owner_course_read_answer(
+    user,
+    api_client,
+) -> None:
+    """Test read answer by owner of course."""
     course = factories.CourseFactory.create(
         status=models.Course.Status.READY,
         owner=user,
@@ -167,16 +265,11 @@ def test_not_owner_remove_answer(
     answer = factories.AnswerFactory.create(
         task=task,
     )
-    api_client.force_authenticate(user=another_user)
-    response = api_client.delete(
+    api_client.force_authenticate(user=user)
+    response = api_client.get(
         reverse_lazy(
             "api:answer-detail",
             kwargs={"pk": answer.pk},
         ),
-        data={
-            "is_true": answer.is_true,
-            "content": answer.content,
-            "task": answer.task.id,
-        },
     )
-    assert response.status_code == status.HTTP_403_FORBIDDEN
+    assert response.status_code == status.HTTP_200_OK

@@ -168,7 +168,30 @@ class CommentSerializer(BaseSerializer):
         fields = (
             "id",
             "content",
-            "task",
             "parent",
             "user",
+            "task",
+            "child_comments",
+            "created",
+            "modified",
+        )
+
+
+class AnswerByUserSerializer(BaseSerializer):
+    """Serializer for representing `AnswerByUser`."""
+
+    user = serializers.PrimaryKeyRelatedField(
+        read_only=True,
+    )
+    task = serializers.PrimaryKeyRelatedField(
+        queryset=models.Task.objects.all(),
+    )
+
+    class Meta:
+        model = models.AnswerByUser
+        fields = (
+            "id",
+            "user",
+            "task",
+            "answer",
         )

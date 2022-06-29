@@ -3,7 +3,6 @@ from django.urls import reverse_lazy
 from rest_framework import status
 
 from apps.courses import factories, models
-from apps.users.factories import UserFactory
 
 pytestmark = pytest.mark.django_db
 
@@ -63,6 +62,7 @@ def test_create_comment_by_not_student(
         data={
             "content": comment.content,
             "task": task.id,
+            "parent": "",
         },
     )
     assert response.status_code == status.HTTP_403_FORBIDDEN
@@ -111,7 +111,6 @@ def test_not_owner_update_comment(
     api_client,
 ) -> None:
     """Test update comment by another user."""
-    another_user = UserFactory.create()
     course = factories.CourseFactory.create(
         status=models.Course.Status.READY,
     )
@@ -125,7 +124,7 @@ def test_not_owner_update_comment(
         task=task,
         user=user,
     )
-    api_client.force_authenticate(user=another_user)
+    api_client.force_authenticate(user=user)
     new_name = "My comment"
     response = api_client.put(
         reverse_lazy("api:comment-detail", kwargs={"pk": comment.pk}),
@@ -155,6 +154,7 @@ def test_owner_remove_comment(
     )
     comment = factories.CommentFactory.create(
         task=task,
+        user=user,
     )
     api_client.force_authenticate(user=user)
     api_client.delete(
@@ -168,7 +168,6 @@ def test_not_owner_remove_comment(
     api_client,
 ) -> None:
     """Test remove comment by another user."""
-    another_user = UserFactory.create()
     course = factories.CourseFactory.create(
         status=models.Course.Status.READY,
     )
@@ -182,8 +181,104 @@ def test_not_owner_remove_comment(
     comment = factories.CommentFactory.create(
         task=task,
     )
-    api_client.force_authenticate(user=another_user)
+    api_client.force_authenticate(user=user)
     response = api_client.delete(
         reverse_lazy("api:comment-detail", kwargs={"pk": comment.pk}),
     )
     assert response.status_code == status.HTTP_403_FORBIDDEN
+
+
+def test_not_student_read_comment(
+    user,
+    api_client,
+) -> None:
+    """Test read comment by not student."""
+    course = factories.CourseFactory.create(
+        status=models.Course.Status.READY,
+    )
+    topic = factories.TopicFactory.create(
+        course=course,
+    )
+    task = factories.TaskFactory.create(
+        topic=topic,
+    )
+    comment = factories.CommentFactory.create(
+        task=task,
+    )
+    api_client.force_authenticate(user=user)
+    response = api_client.get(
+        reverse_lazy("api:comment-detail", kwargs={"pk": comment.pk}),
+    )
+    assert response.status_code == status.HTTP_403_FORBIDDEN
+
+
+def test_student_read_comment(
+    user,
+    api_client,
+) -> None:
+    """Test read comment by not student."""
+    course = factories.CourseFactory.create(
+        status=models.Course.Status.READY,
+    )
+    course.students.add(user)
+    topic = factories.TopicFactory.create(
+        course=course,
+    )
+    task = factories.TaskFactory.create(
+        topic=topic,
+    )
+    comment = factories.CommentFactory.create(
+        task=task,
+    )
+    api_client.force_authenticate(user=user)
+    response = api_client.get(
+        reverse_lazy("api:comment-detail", kwargs={"pk": comment.pk}),
+    )
+    assert response.status_code == status.HTTP_200_OK
+
+
+def test_not_auth_read_comment(
+    api_client,
+) -> None:
+    """Test read comment by not auth user."""
+    course = factories.CourseFactory.create(
+        status=models.Course.Status.READY,
+    )
+    topic = factories.TopicFactory.create(
+        course=course,
+    )
+    task = factories.TaskFactory.create(
+        topic=topic,
+    )
+    comment = factories.CommentFactory.create(
+        task=task,
+    )
+    response = api_client.get(
+        reverse_lazy("api:comment-detail", kwargs={"pk": comment.pk}),
+    )
+    assert response.status_code == status.HTTP_401_UNAUTHORIZED
+
+
+def test_owner_course_read_comment(
+    user,
+    api_client,
+) -> None:
+    """Test read comment by owner of course."""
+    course = factories.CourseFactory.create(
+        status=models.Course.Status.READY,
+        owner=user,
+    )
+    topic = factories.TopicFactory.create(
+        course=course,
+    )
+    task = factories.TaskFactory.create(
+        topic=topic,
+    )
+    comment = factories.CommentFactory.create(
+        task=task,
+    )
+    api_client.force_authenticate(user=user)
+    response = api_client.get(
+        reverse_lazy("api:comment-detail", kwargs={"pk": comment.pk}),
+    )
+    assert response.status_code == status.HTTP_200_OK
