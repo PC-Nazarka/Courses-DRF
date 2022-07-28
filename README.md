@@ -1,20 +1,34 @@
-# Courses
+## courses
 
 [![Built with Cookiecutter Django](https://img.shields.io/badge/built%20with-Cookiecutter%20Django-ff69b4.svg?logo=cookiecutter)](https://github.com/cookiecutter/cookiecutter-django/)
 [![Black code style](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/ambv/black)
 
-## Settings
+## Описание
 
-Moved to [settings](http://cookiecutter-django.readthedocs.io/en/latest/settings.html).
+Проект был разработан для действий с курсами (CRUD/выбор/прохождение)
 
-## Deployment
+## Зависимости:
 
-The following details how to deploy this application.
+    - Python - основной язык программирования
+    - Django - фреймворк для написания backend части
+    - Celery - библиотека для управления очередями
 
-### Heroku
+## Окружение
 
-See detailed [cookiecutter-django Heroku documentation](http://cookiecutter-django.readthedocs.io/en/latest/deployment-on-heroku.html).
+1. Развёртывание производится на операционной системе Manjaro
+1. Требуется предустановленный интерпретатор Python версии 3.10.5, docker, docker-compose
 
-### Docker
+## Использование
 
-See detailed [cookiecutter-django Docker documentation](http://cookiecutter-django.readthedocs.io/en/latest/deployment-with-docker.html).
+Для запуска нужно установить библиотеки invoke и rich для удобного
+взаимодействия
+
+```bash
+pip install invoke rich
+```
+
+После установки библиотек:
+
+```bash
+inv docker.run
+```
